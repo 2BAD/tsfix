@@ -1,5 +1,5 @@
 {
-  "name": "@2bad/ts-lib-starter",
+  "name": "@2bad/tsfix",
   "version": "1.0.0",
   "description": "",
   "keywords": [
@@ -7,13 +7,13 @@
     "typescript",
     "starter"
   ],
-  "homepage": "https://github.com/2BAD/ts-lib-starter#readme",
+  "homepage": "https://github.com/2BAD/tsfix#readme",
   "bugs": {
-    "url": "https://github.com/2BAD/ts-lib-starter/issues"
+    "url": "https://github.com/2BAD/tsfix/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/2BAD/ts-lib-starter.git"
+    "url": "https://github.com/2BAD/tsfix.git"
   },
   "license": "MIT",
   "author": "2BAD (https://github.com/2BAD)",
@@ -31,7 +31,9 @@
     "build"
   ],
   "scripts": {
+    "prebuild": "rimraf build",
     "build": "run-p build:*",
+    "postbuild": "run-s fix:alias fix:ext",
     "build:swc": "swc ./source -d ./build",
     "build:types": "tsc --project tsconfig.build.json",
     "check": "run-p check:*",
@@ -42,8 +44,6 @@
     "fix:code": "run-s 'lint -- --fix'",
     "fix:ext": "./fix-ext.sh",
     "fix:format": "prettier --write 'source/**/*.ts'",
-    "postbuild": "run-s fix:alias fix:ext",
-    "prebuild": "rimraf build",
     "prepublishOnly": "run-s build",
     "preversion": "run-s check test build",
     "test": "vitest run",
@@ -55,6 +55,10 @@
     "semi": false,
     "singleQuote": true,
     "trailingComma": "none"
+  },
+  "dependencies": {
+    "fast-glob": "3.3.2",
+    "typescript": "5.3.3"
   },
   "devDependencies": {
     "@2bad/tsconfig": "2.0.1",
@@ -78,16 +82,15 @@
     "prettier": "3.2.4",
     "rimraf": "5.0.5",
     "tsc-alias": "1.8.8",
-    "typescript": "5.3.3",
     "vite-tsconfig-paths": "4.3.1",
     "vitest": "1.2.1"
   },
+  "packageManager": "npm@10.3.0",
   "engines": {
     "node": ">=20"
   },
   "volta": {
     "node": "20.11.0",
     "npm": "10.3.0"
-  },
-  "packageManager": "npm@10.3.0"
+  }
 }
