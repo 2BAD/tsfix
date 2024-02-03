@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/unbound-method */
-/* eslint-disable import/no-named-as-default-member */
-
 import { dirname } from 'node:path'
 import ts from 'typescript'
+// eslint-disable-next-line import/no-named-as-default-member
 const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = ts
 
 /**
@@ -11,12 +9,14 @@ const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = ts
  * @throws {Error} If tsconfig file is not found or if no outDir is specified.
  */
 export const findBuildDir = (): string => {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigPath = findConfigFile(process.cwd(), sys.fileExists)
 
   if (typeof tsconfigPath !== 'string') {
     throw new Error('Unable to locate tsconfig')
   }
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigFile = readConfigFile(tsconfigPath, sys.readFile)
   const parsedTsconfig = parseJsonConfigFileContent(tsconfigFile.config, sys, dirname(tsconfigPath))
 
