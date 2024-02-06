@@ -12,7 +12,7 @@ export const findBuildDir = (): string => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigPath = findConfigFile(process.cwd(), sys.fileExists)
 
-  if (typeof tsconfigPath !== 'string') {
+  if (!tsconfigPath) {
     throw new Error('Unable to locate tsconfig')
   }
 
@@ -20,7 +20,7 @@ export const findBuildDir = (): string => {
   const tsconfigFile = readConfigFile(tsconfigPath, sys.readFile)
   const parsedTsconfig = parseJsonConfigFileContent(tsconfigFile.config, sys, dirname(tsconfigPath))
 
-  if (parsedTsconfig.options.outDir !== undefined) {
+  if (parsedTsconfig.options.outDir) {
     return parsedTsconfig.options.outDir
   }
 
