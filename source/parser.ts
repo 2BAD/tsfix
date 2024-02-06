@@ -1,8 +1,7 @@
 import { isBuiltin } from 'node:module'
 import { extname } from 'node:path'
 import { type Except } from 'type-fest'
-import { IMPORT_TYPE, type ParsedImport } from './types.ts'
-import { notNull } from './utils.ts'
+import { IMPORT_TYPE, notNull, type ParsedImport } from './types.ts'
 
 const IMPORT_REGEX = /import\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
 const IMPORT_REGEX_CAPTURING = /import\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](?<specifier>.*?)['"]/
