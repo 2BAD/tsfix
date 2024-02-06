@@ -1,8 +1,13 @@
-type ImportType = 'relative' | 'alias' | 'package' | 'builtin'
+export const IMPORT_TYPE = {
+  RELATIVE: 'relative',
+  ALIAS: 'alias',
+  PACKAGE: 'package',
+  BUILTIN: 'builtin'
+} as const
 
 export type ParsedImport = {
   import: string
   specifier: string
-  type: ImportType
+  type: (typeof IMPORT_TYPE)[keyof typeof IMPORT_TYPE]
   extension: string | null
 }

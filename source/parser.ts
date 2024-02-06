@@ -1,6 +1,7 @@
 import { isBuiltin } from 'node:module'
 import { extname } from 'node:path'
-import { type ParsedImport } from './types.ts'
+import { type Except } from 'type-fest'
+import { IMPORT_TYPE, type ParsedImport } from './types.ts'
 import { notNull } from './utils.ts'
 
 const IMPORT_REGEX = /import\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
@@ -12,9 +13,9 @@ const DYNAMIC_IMPORT_REGEX_CAPTURING = /import\(['"](?<specifier>.*?)['"]\)/
  *
  * @param statement - The import statement.
  */
-const extractSpecifier = (statement: string): Omit<ParsedImport, 'type' | 'extension'> | null => {
+export const extractSpecifier = (statement: string): Except<ParsedImport, 'type' | 'extension'> | null => {
   const result = statement.match(IMPORT_REGEX_CAPTURING) ?? statement.match(DYNAMIC_IMPORT_REGEX_CAPTURING)
-  return result?.groups?.['specifier'] !== undefined
+  return result?.groups?.['specifier']
     ? {
         import: statement,
         specifier: result.groups['specifier']
@@ -27,15 +28,15 @@ const extractSpecifier = (statement: string): Omit<ParsedImport, 'type' | 'exten
  *
  * @param dependencies - An array of dependencies to check against.
  */
-const detectSpecifierType = (dependencies: string[] = []) => {
-  return (i: Omit<ParsedImport, 'type' | 'extension'>): Omit<ParsedImport, 'extension'> => {
+export const detectSpecifierType = (dependencies: string[] = []) => {
+  return (i: Except<ParsedImport, 'type' | 'extension'>): Except<ParsedImport, 'extension'> => {
     switch (true) {
       case dependencies.includes(i.specifier):
-        return { ...i, type: 'package' }
+        return { ...i, type: IMPORT_TYPE.PACKAGE }
       case isBuiltin(i.specifier):
-        return { ...i, type: 'builtin' }
+        return { ...i, type: IMPORT_TYPE.BUILTIN }
       default:
-        return { ...i, type: 'relative' }
+        return { ...i, type: IMPORT_TYPE.RELATIVE }
     }
   }
 }
@@ -45,8 +46,8 @@ const detectSpecifierType = (dependencies: string[] = []) => {
  *
  * @param i - ParsedImport object.
  */
-const detectFileExtension = (i: Omit<ParsedImport, 'extension'>): ParsedImport => {
-  return { ...i, extension: extname(i.specifier) }
+export const detectFileExtension = (i: Except<ParsedImport, 'extension'>): ParsedImport => {
+  return { ...i, extension: extname(i.specifier) || null }
 }
 
 /**
@@ -57,7 +58,7 @@ const detectFileExtension = (i: Omit<ParsedImport, 'extension'>): ParsedImport =
  */
 export const parseImports = (code: string, dependencies: string[]): ParsedImport[] => {
   const statements = code.match(IMPORT_REGEX)
-  return statements !== null
+  return statements
     ? statements.map(extractSpecifier).filter(notNull).map(detectSpecifierType(dependencies)).map(detectFileExtension)
     : []
 }
