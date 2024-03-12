@@ -30,12 +30,16 @@ export const extractSpecifier = (statement: string): Except<ParsedImport, 'type'
 export const detectSpecifierType = (dependencies: string[] = []) => {
   return (i: Except<ParsedImport, 'type' | 'extension'>): Except<ParsedImport, 'extension'> => {
     switch (true) {
-      case dependencies.includes(i.specifier):
-        return { ...i, type: IMPORT_TYPE.PACKAGE }
+      case i.specifier.startsWith('/'):
+        return { ...i, type: IMPORT_TYPE.ABSOLUTE }
+      case i.specifier.startsWith('.'):
+        return { ...i, type: IMPORT_TYPE.RELATIVE }
       case isBuiltin(i.specifier):
         return { ...i, type: IMPORT_TYPE.BUILTIN }
+      case dependencies.includes(i.specifier):
+        return { ...i, type: IMPORT_TYPE.PACKAGE }
       default:
-        return { ...i, type: IMPORT_TYPE.RELATIVE }
+        return { ...i, type: IMPORT_TYPE.ALIAS }
     }
   }
 }

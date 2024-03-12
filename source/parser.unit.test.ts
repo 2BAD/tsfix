@@ -30,6 +30,7 @@ describe('parseImports', () => {
     import { React } from 'react'
     import { debounce } from 'lodash'
     import Foo from './components/Foo'
+    import Bar from '/components/Bar'
     `
 
     const expected = [
@@ -49,6 +50,12 @@ describe('parseImports', () => {
         import: "import Foo from './components/Foo'",
         specifier: './components/Foo',
         type: 'relative',
+        extension: null
+      },
+      {
+        import: "import Bar from '/components/Bar'",
+        specifier: '/components/Bar',
+        type: 'absolute',
         extension: null
       }
     ]

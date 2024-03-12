@@ -6,10 +6,11 @@
 export const notNull = <T>(e: T | null): e is Exclude<typeof e, null> => e !== null
 
 export const IMPORT_TYPE = {
+  ABSOLUTE: 'absolute',
   RELATIVE: 'relative',
-  ALIAS: 'alias',
+  BUILTIN: 'builtin',
   PACKAGE: 'package',
-  BUILTIN: 'builtin'
+  ALIAS: 'alias'
 } as const
 
 export type ParsedImport = {
