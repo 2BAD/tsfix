@@ -3,8 +3,9 @@ import { extname } from 'node:path'
 import { type Except } from 'type-fest'
 import { IMPORT_TYPE, notNull, type ParsedImport } from './types.ts'
 
-const IMPORT_REGEX = /import\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
-const IMPORT_REGEX_CAPTURING = /import\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](?<specifier>.*?)['"]/
+const IMPORT_REGEX = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
+const IMPORT_REGEX_CAPTURING = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](?<specifier>.*?)['"]/
+// TODO: should be updated to handle import attributes through a second argument
 const DYNAMIC_IMPORT_REGEX_CAPTURING = /import\(['"](?<specifier>.*?)['"]\)/
 
 /**
