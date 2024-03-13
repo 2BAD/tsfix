@@ -8,7 +8,6 @@ import { type Import } from './types.ts'
  */
 export const applyFixes = (code: string, imports: Import[]): string => {
   for (const i of imports) {
-    console.log(i.specifier)
     if (i.type === 'absolute' || i.type === 'relative') {
       if (i.extension === '.ts') {
         // replace .ts with .js
