@@ -3,8 +3,9 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    globals: true,
+    root: 'source',
     exclude: ['build', 'node_modules'],
+    globals: true,
     coverage: {
       provider: 'v8'
     },
