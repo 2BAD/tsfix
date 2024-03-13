@@ -13,7 +13,7 @@ export const IMPORT_TYPE = {
   ALIAS: 'alias'
 } as const
 
-export type ParsedImport = {
+export type Import = {
   import: string
   specifier: string
   type: (typeof IMPORT_TYPE)[keyof typeof IMPORT_TYPE]

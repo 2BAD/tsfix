@@ -1,9 +1,9 @@
 import { stream } from 'fast-glob'
 import { readFile, writeFile } from 'node:fs/promises'
-import { fixImport } from './fixer.ts'
+import { extractImports } from './extractor.ts'
+import { applyFixes } from './fixer.ts'
 import { getPackageDependencies } from './helpers/package.ts'
 import { findBuildDir } from './helpers/tsconfig.ts'
-import { parseImports } from './parser.ts'
 
 const dependencies = await getPackageDependencies()
 
@@ -16,10 +16,11 @@ const options = {
   cwd: findBuildDir()
 }
 
+// @ts-expect-error should be fixed later
 // eslint-disable-next-line vitest/require-hook
 stream(pattern, options).on('data', async (filePath: string): void => {
-  const content = await readFile(filePath, 'utf-8')
-  const imports = parseImports(content, dependencies)
-  const fixed = fixImport(content, imports)
-  await writeFile(filePath, fixed)
+  const sourceCode = await readFile(filePath, 'utf-8')
+  const imports = extractImports(sourceCode, dependencies)
+  const fixedCode = applyFixes(sourceCode, imports)
+  await writeFile(filePath, fixedCode)
 })

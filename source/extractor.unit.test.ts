@@ -1,16 +1,16 @@
 import { describe, expect, it } from 'vitest'
-import { detectFileExtension, detectSpecifierType, extractSpecifier, parseImports } from './parser.ts'
+import { detectFileExtension, detectSpecifierType, extractImports, extractSpecifier } from './extractor.ts'
 
-describe('parseImports', () => {
+describe('extractImports', () => {
   const dependencies = ['react', 'lodash']
 
   it('should return an empty array when there are no import statements', () => {
     expect.assertions(1)
     const code = ''
-    expect(parseImports(code, dependencies)).toStrictEqual([])
+    expect(extractImports(code, dependencies)).toStrictEqual([])
   })
 
-  it('should correctly parse single import statement with a package specifier', () => {
+  it('should correctly extract single import statement with a package specifier', () => {
     expect.assertions(1)
     const code = "import { React } from 'react'"
     const expected = [
@@ -21,10 +21,10 @@ describe('parseImports', () => {
         extension: null
       }
     ]
-    expect(parseImports(code, dependencies)).toStrictEqual(expected)
+    expect(extractImports(code, dependencies)).toStrictEqual(expected)
   })
 
-  it('should correctly parse multiple import statements with different specifiers', () => {
+  it('should correctly extract multiple import statements with different specifiers', () => {
     expect.assertions(1)
     const code = `
     import { React } from 'react'
@@ -60,10 +60,10 @@ describe('parseImports', () => {
       }
     ]
 
-    expect(parseImports(code, dependencies)).toStrictEqual(expected)
+    expect(extractImports(code, dependencies)).toStrictEqual(expected)
   })
 
-  describe('should correctly parse valid imports', () => {
+  describe('should correctly extract valid imports', () => {
     const validInputs: Array<{ input: string; expected: string }> = [
       {
         input: 'import defaultExport from "module-name";',
@@ -133,10 +133,10 @@ describe('parseImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
-      expect(parseImports(input, [])[0]?.specifier).toBe(expected)
+      expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
-  describe('should correctly parse valid imports with extra symbols', () => {
+  describe('should correctly extract valid imports with extra symbols', () => {
     const validInputs: Array<{ input: string; expected: string }> = [
       {
         input: `
@@ -153,11 +153,11 @@ describe('parseImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
-      expect(parseImports(input, [])[0]?.specifier).toBe(expected)
+      expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
 
-  describe('should correctly parse multiple imports statements', () => {
+  describe('should correctly extract multiple imports statements', () => {
     const validInputs: Array<{ input: string; expected: string[] }> = [
       {
         input: `
@@ -171,14 +171,14 @@ describe('parseImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(3)
-      const result = parseImports(input, [])
+      const result = extractImports(input, [])
       expect(result).toHaveLength(2)
       expect(result[0]?.specifier).toBe(expected[0])
       expect(result[1]?.specifier).toBe(expected[1])
     })
   })
 
-  describe('should correctly parse valid dynamic import', () => {
+  describe('should correctly extract valid dynamic import', () => {
     const validInputs: Array<{ input: string; expected: string }> = [
       {
         input: `import('/my-module.js')`,
@@ -196,7 +196,7 @@ describe('parseImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
-      expect(parseImports(input, [])[0]?.specifier).toBe(expected)
+      expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
 })

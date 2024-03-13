@@ -1,7 +1,7 @@
 import { isBuiltin } from 'node:module'
 import { extname } from 'node:path'
 import { type Except } from 'type-fest'
-import { IMPORT_TYPE, notNull, type ParsedImport } from './types.ts'
+import { IMPORT_TYPE, notNull, type Import } from './types.ts'
 
 const IMPORT_REGEX = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
 const IMPORT_REGEX_CAPTURING = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](?<specifier>.*?)['"]/
@@ -13,7 +13,7 @@ const DYNAMIC_IMPORT_REGEX_CAPTURING = /import\(['"](?<specifier>.*?)['"]\)/
  *
  * @param statement - The import statement.
  */
-export const extractSpecifier = (statement: string): Except<ParsedImport, 'type' | 'extension'> | null => {
+export const extractSpecifier = (statement: string): Except<Import, 'type' | 'extension'> | null => {
   const result = statement.match(IMPORT_REGEX_CAPTURING) ?? statement.match(DYNAMIC_IMPORT_REGEX_CAPTURING)
   return result?.groups?.['specifier']
     ? {
@@ -29,7 +29,7 @@ export const extractSpecifier = (statement: string): Except<ParsedImport, 'type'
  * @param dependencies - An array of dependencies to check against.
  */
 export const detectSpecifierType = (dependencies: string[] = []) => {
-  return (i: Except<ParsedImport, 'type' | 'extension'>): Except<ParsedImport, 'extension'> => {
+  return (i: Except<Import, 'type' | 'extension'>): Except<Import, 'extension'> => {
     switch (true) {
       case i.specifier.startsWith('/'):
         return { ...i, type: IMPORT_TYPE.ABSOLUTE }
@@ -50,17 +50,17 @@ export const detectSpecifierType = (dependencies: string[] = []) => {
  *
  * @param i - ParsedImport object.
  */
-export const detectFileExtension = (i: Except<ParsedImport, 'extension'>): ParsedImport => {
+export const detectFileExtension = (i: Except<Import, 'extension'>): Import => {
   return { ...i, extension: extname(i.specifier) || null }
 }
 
 /**
- * Parses the import statements from the given content string.
+ * Parses the import statements from the given code string.
  *
  * @param code - The source code string.
  * @param dependencies - List of package dependencies
  */
-export const parseImports = (code: string, dependencies: string[]): ParsedImport[] => {
+export const extractImports = (code: string, dependencies: string[]): Import[] => {
   const statements = code.match(IMPORT_REGEX)
   return statements
     ? statements.map(extractSpecifier).filter(notNull).map(detectSpecifierType(dependencies)).map(detectFileExtension)
