@@ -9,8 +9,14 @@ import { type Import } from './types.ts'
 export const applyFixes = (code: string, imports: Import[]): string => {
   for (const i of imports) {
     console.log(i.specifier)
-    if ((i.type === 'absolute' || i.type === 'relative') && i.extension === '.ts') {
-      code = code.replace(i.specifier, i.specifier.replace('.ts', '.js'))
+    if (i.type === 'absolute' || i.type === 'relative') {
+      if (i.extension === '.ts') {
+        // replace .ts with .js
+        code = code.replace(i.specifier, i.specifier.replace('.ts', '.js'))
+      } else if (i.extension === null) {
+        // append .js if extension is missing
+        code = code.replace(i.specifier, i.specifier + '.js')
+      }
     }
   }
   return code
