@@ -17,7 +17,7 @@ export const extractSpecifier = (statement: string): Except<Import, 'type' | 'ex
   const result = statement.match(IMPORT_REGEX_CAPTURING) ?? statement.match(DYNAMIC_IMPORT_REGEX_CAPTURING)
   return result?.groups?.['specifier']
     ? {
-        import: statement,
+        source: statement,
         specifier: result.groups['specifier']
       }
     : null

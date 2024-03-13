@@ -6,26 +6,31 @@ describe('extractImports', () => {
 
   it('should return an empty array when there are no import statements', () => {
     expect.assertions(1)
+
     const code = ''
+
     expect(extractImports(code, dependencies)).toStrictEqual([])
   })
 
   it('should correctly extract single import statement with a package specifier', () => {
     expect.assertions(1)
+
     const code = "import { React } from 'react'"
     const expected = [
       {
-        import: "import { React } from 'react'",
+        source: "import { React } from 'react'",
         specifier: 'react',
         type: 'package',
         extension: null
       }
     ]
+
     expect(extractImports(code, dependencies)).toStrictEqual(expected)
   })
 
   it('should correctly extract multiple import statements with different specifiers', () => {
     expect.assertions(1)
+
     const code = `
     import { React } from 'react'
     import { debounce } from 'lodash'
@@ -36,31 +41,31 @@ describe('extractImports', () => {
 
     const expected = [
       {
-        import: "import { React } from 'react'",
+        source: "import { React } from 'react'",
         specifier: 'react',
         type: 'package',
         extension: null
       },
       {
-        import: "import { debounce } from 'lodash'",
+        source: "import { debounce } from 'lodash'",
         specifier: 'lodash',
         type: 'package',
         extension: null
       },
       {
-        import: "import Foo from './components/Foo'",
+        source: "import Foo from './components/Foo'",
         specifier: './components/Foo',
         type: 'relative',
         extension: null
       },
       {
-        import: "import Bar from '/components/Bar'",
+        source: "import Bar from '/components/Bar'",
         specifier: '/components/Bar',
         type: 'absolute',
         extension: null
       },
       {
-        import: "import fs from 'node:fs'",
+        source: "import fs from 'node:fs'",
         specifier: 'node:fs',
         type: 'builtin',
         extension: null
@@ -140,6 +145,7 @@ describe('extractImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
+
       expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
@@ -160,6 +166,7 @@ describe('extractImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
+
       expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
@@ -178,7 +185,9 @@ describe('extractImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(3)
+
       const result = extractImports(input, [])
+
       expect(result).toHaveLength(2)
       expect(result[0]?.specifier).toBe(expected[0])
       expect(result[1]?.specifier).toBe(expected[1])
@@ -203,6 +212,7 @@ describe('extractImports', () => {
 
     it.each(validInputs)('%j', ({ input, expected }) => {
       expect.assertions(1)
+
       expect(extractImports(input, [])[0]?.specifier).toBe(expected)
     })
   })
@@ -211,6 +221,7 @@ describe('extractImports', () => {
 describe('extractSpecifier', () => {
   it('should return null for import statement without a specifier', () => {
     expect.assertions(1)
+
     const statement = 'import { React } from ""'
 
     expect(extractSpecifier(statement)).toBeNull()
@@ -218,9 +229,10 @@ describe('extractSpecifier', () => {
 
   it('should correctly extract the specifier from an import statement', () => {
     expect.assertions(1)
+
     const statement = 'import Foo from "./components/Foo"'
     const expected = {
-      import: 'import Foo from "./components/Foo"',
+      source: 'import Foo from "./components/Foo"',
       specifier: './components/Foo'
     }
 
@@ -231,13 +243,14 @@ describe('extractSpecifier', () => {
 describe('detectSpecifierType', () => {
   it('should correctly detect a package specifier', () => {
     expect.assertions(1)
+
     const dependencies = ['react']
     const parsedImport = {
-      import: 'import { React } from "react"',
+      source: 'import { React } from "react"',
       specifier: 'react'
     }
     const expected = {
-      import: 'import { React } from "react"',
+      source: 'import { React } from "react"',
       specifier: 'react',
       type: 'package'
     }
@@ -249,8 +262,9 @@ describe('detectSpecifierType', () => {
 describe('detectFileExtension', () => {
   it('should correctly detect the file extension of a specifier', () => {
     expect.assertions(1)
+
     const parsedImport = {
-      import: 'import Foo from "./components/Foo.js"',
+      source: 'import Foo from "./components/Foo.js"',
       specifier: './components/Foo.js',
       type: 'relative'
     } as const

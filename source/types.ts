@@ -14,7 +14,7 @@ export const IMPORT_TYPE = {
 } as const
 
 export type Import = {
-  import: string
+  source: string
   specifier: string
   type: (typeof IMPORT_TYPE)[keyof typeof IMPORT_TYPE]
   extension: string | null
