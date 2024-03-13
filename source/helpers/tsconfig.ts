@@ -1,7 +1,5 @@
 import { dirname } from 'node:path'
-import ts from 'typescript'
-// eslint-disable-next-line import/no-named-as-default-member
-const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = ts
+import { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } from 'typescript'
 
 /**
  * Retrieves the build directory specified in the tsconfig file.

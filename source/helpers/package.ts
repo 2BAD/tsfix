@@ -22,10 +22,11 @@ export const findPackageJson = (cwd?: string): string | null => {
 
 /**
  * Retrieves all package dependencies from a given path.
- *
- * @param path - The path of the package.json file.
  */
-export const getPackageDependencies = async (path: string): Promise<string[]> => {
+export const getPackageDependencies = async (): Promise<string[]> => {
+  const path = findPackageJson()
+  if (!path) return []
+
   try {
     const packageData = await readFile(path, 'utf-8')
     const packageJson = JSON.parse(packageData) as PackageJson
