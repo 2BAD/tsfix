@@ -31,6 +31,7 @@ describe('extractImports', () => {
     import { debounce } from 'lodash'
     import Foo from './components/Foo'
     import Bar from '/components/Bar'
+    import fs from 'node:fs'
     `
 
     const expected = [
@@ -56,6 +57,12 @@ describe('extractImports', () => {
         import: "import Bar from '/components/Bar'",
         specifier: '/components/Bar',
         type: 'absolute',
+        extension: null
+      },
+      {
+        import: "import fs from 'node:fs'",
+        specifier: 'node:fs',
+        type: 'builtin',
         extension: null
       }
     ]
