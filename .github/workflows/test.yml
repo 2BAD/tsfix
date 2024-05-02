@@ -5,8 +5,8 @@ on:
     paths-ignore:
       - 'docs/**'
       - '*.md'
-  schedule:
-    - cron: 0 20 * * *
+  # schedule:
+  #   - cron: 0 20 * * *
 
 jobs:
   test:
@@ -47,7 +47,7 @@ jobs:
       - run: npm ci
 
       - run: npm run test:unit
-      - uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457 # v3
+      - uses: codecov/codecov-action@84508663e988701840491b86de86b666e8a86bed # v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unit
