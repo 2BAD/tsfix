@@ -197,7 +197,7 @@ describe('extractImports', () => {
   describe('should correctly extract valid dynamic import', () => {
     const validInputs: Array<{ input: string; expected: string }> = [
       {
-        input: `import('/my-module.js')`,
+        input: "import('/my-module.js')",
         expected: '/my-module.js'
       },
       {
