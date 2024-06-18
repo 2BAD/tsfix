@@ -27,6 +27,9 @@
   "type": "module",
   "exports": "./build/index.js",
   "typings": "./build/index.d.ts",
+  "bin": {
+    "tsfix": "./bin/cli.mjs"
+  },
   "files": [
     "build"
   ],
@@ -58,6 +61,7 @@
   },
   "dependencies": {
     "fast-glob": "3.3.2",
+    "meow": "13.2.0",
     "typescript": "5.4.5"
   },
   "devDependencies": {
