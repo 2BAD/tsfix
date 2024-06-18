@@ -1,5 +1,7 @@
 import { dirname } from 'node:path'
-import { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } from 'typescript'
+import pkg from 'typescript'
+
+const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = pkg
 
 /**
  * Retrieves the build directory specified in the tsconfig file.
