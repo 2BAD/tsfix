@@ -37,6 +37,8 @@ describe('extractImports', () => {
     import Foo from './components/Foo'
     import Bar from '/components/Bar'
     import fs from 'node:fs'
+    import * as js from './js.js'
+    import * as js from './js.ts'
     `
 
     const expected = [
@@ -69,6 +71,18 @@ describe('extractImports', () => {
         specifier: 'node:fs',
         type: 'builtin',
         extension: null
+      },
+      {
+        source: "import * as js from './js.js'",
+        specifier: './js.js',
+        type: 'relative',
+        extension: '.js'
+      },
+      {
+        source: "import * as js from './js.ts'",
+        specifier: './js.ts',
+        type: 'relative',
+        extension: '.ts'
       }
     ]
 
@@ -140,6 +154,10 @@ describe('extractImports', () => {
       {
         input: 'import "/modules/my-module.ts";',
         expected: '/modules/my-module.ts'
+      },
+      {
+        input: "import * as js from './js.js'",
+        expected: './js.js'
       }
     ]
 

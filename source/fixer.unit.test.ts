@@ -40,4 +40,47 @@ describe('applyFixes', () => {
       import { baz } from '../qux.js';
     `)
   })
+
+  it('should fix imports by appending .js to relative import specifiers with .js extension', () => {
+    expect.assertions(1)
+    const code = `
+      import ts from 'typescript-eslint'
+      import * as js from './js.ts'
+
+      const all: Linter.FlatConfig = Object.freeze({
+        ...js.configs.all,
+        ...ts.configs.all
+      })
+
+      export default all
+    `
+    const imports: Import[] = [
+      {
+        source: "import ts from 'typescript-eslint'",
+        specifier: 'typescript-eslint',
+        type: 'alias',
+        extension: null
+      },
+      {
+        source: "import * as js from './js.ts'",
+        specifier: './js.ts',
+        type: 'relative',
+        extension: '.ts'
+      }
+    ]
+
+    const result = applyFixes(code, imports)
+
+    expect(result).toBe(`
+      import ts from 'typescript-eslint'
+      import * as js from './js.js'
+
+      const all: Linter.FlatConfig = Object.freeze({
+        ...js.configs.all,
+        ...ts.configs.all
+      })
+
+      export default all
+    `)
+  })
 })
