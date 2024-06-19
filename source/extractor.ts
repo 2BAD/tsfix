@@ -1,7 +1,10 @@
+import debug from 'debug'
 import { isBuiltin } from 'node:module'
 import { extname } from 'node:path'
 import { type Except } from 'type-fest'
 import { IMPORT_TYPE, notNull, type Import } from './types.ts'
+
+const log = debug('tsfix:extractor')
 
 const IMPORT_REGEX = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](.*?)['"]|import\(.*?\)/gm
 const IMPORT_REGEX_CAPTURING = /(?:import|export)\s+(?:{[^{}]+}|.*?)\s*(?:from)?\s*['"](?<specifier>.*?)['"]/
@@ -62,7 +65,16 @@ export const detectFileExtension = (i: Except<Import, 'extension'>): Import => {
  */
 export const extractImports = (code: string, dependencies: string[]): Import[] => {
   const statements = code.match(IMPORT_REGEX)
-  return statements
-    ? statements.map(extractSpecifier).filter(notNull).map(detectSpecifierType(dependencies)).map(detectFileExtension)
-    : []
+  if (statements === null || statements.length === 0) {
+    return []
+  } else {
+    const imports = statements
+      .map(extractSpecifier)
+      .filter(notNull)
+      .map(detectSpecifierType(dependencies))
+      .map(detectFileExtension)
+
+    log('Found %d imports statements: %o', imports.length, imports)
+    return imports
+  }
 }

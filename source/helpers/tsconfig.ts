@@ -1,7 +1,9 @@
+import debug from 'debug'
 import { dirname } from 'node:path'
 import pkg from 'typescript'
 
 const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = pkg
+const log = debug('tsfix:tsconfig')
 
 /**
  * Retrieves the build directory specified in the tsconfig file.
@@ -11,6 +13,7 @@ const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = pkg
 export const findBuildDir = (): string => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigPath = findConfigFile(process.cwd(), sys.fileExists)
+  log('Found tsconfig.json at: %s', tsconfigPath)
 
   if (!tsconfigPath) {
     throw new Error('Unable to locate tsconfig')
@@ -21,6 +24,7 @@ export const findBuildDir = (): string => {
   const parsedTsconfig = parseJsonConfigFileContent(tsconfigFile.config, sys, dirname(tsconfigPath))
 
   if (parsedTsconfig.options.outDir) {
+    log('Found outDir: %s', parsedTsconfig.options.outDir)
     return parsedTsconfig.options.outDir
   }
 

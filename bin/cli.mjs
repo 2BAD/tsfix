@@ -28,7 +28,6 @@ const cli = meow(
 
 try {
   await tsFix(cli.flags.extensions)
-  console.log('Imports fixed successfully!')
 } catch (error) {
   console.error('Error processing files:', error)
 }
