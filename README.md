@@ -1,39 +1,72 @@
-# TS Lib Starter
+# TSFIX
 
-A lightweight and customizable starter kit for building TypeScript libraries. It comes with ESM support, flexible configuration options, extensive ESLint rules, and built-in Github Actions integration to automate the build checks, tests, and package publishing process. With TypeScript path aliases and speedy test capabilities, developers can easily create high-quality, performant libraries using this starter kit.
+[![NPM version](https://img.shields.io/npm/v/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
+[![License](https://img.shields.io/npm/l/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
+[![GitHub Build Status](https://img.shields.io/github/actions/workflow/status/2BAD/tsfix/build.yml)](https://github.com/2BAD/tsfix/actions/workflows/build.yml)
+[![Code coverage](https://img.shields.io/codecov/c/github/2BAD/tsfix)](https://codecov.io/gh/2BAD/tsfix)
+[![Written in TypeScript](https://img.shields.io/github/languages/top/2BAD/tsfix)](https://github.com/2BAD/tsfix/search?l=typescript)
 
-# ✨ Features
+This tool ensures that your compiled JavaScript files are valid ESM by replacing or appending missing extensions in the output files.
 
-- 🔥 **ESM First**
-- 📝 **Extensive ESLint Rules**
-- :octocat: **Github Actions**
-- 🪢 **Typescript Path Aliases**
-- 🏎️ **Super Fast Tests**
+## Features
 
-# Using this template
+Automatically detects typescript configuration and paths.
+Handles all types of imports (absolute, relative, internal, dynamic etc.)
 
-- Search `ts-lib-starter` and replace it with your custom package name.
-- Search `2BAD` and replace it with your name. (be careful not to replace `@2bad/tsconfig` references)
+## Install
 
-# Package Choices
+```shell
+npm install --save-dev @2bad/tsfix
+```
 
-The packages chosen for this project include some of the most popular and widely used tools for TypeScript development:
+## Usage
 
-- **typescript**: a superset of JavaScript that adds type annotations to improve code quality, readability, and maintainability.
-- **eslint**: a tool for identifying and reporting on patterns found in code. It's highly configurable and can be customized according to different coding standards. Comes preconfigured with plugins for linting tests, jsdoc blocks, and TypeScript itself.
-- **prettier**: an opinionated code formatter that ensures consistent formatting across the entire codebase.
-- **npm-run-all**: a CLI tool that allows you to run multiple npm scripts sequentially or in parallel.
-- **tsc-alias**: a TypeScript plugin that provides easy-to-use aliases for import statements without requiring complex configurations in Webpack or other build tools.
-- **vitest**: a testing framework that includes functionality for both unit and integration tests.
+You can use `tsfix` as a post-build script in your project. Add the following script to your package.json:
 
-# NPM Scripts
+```json
+{
+  "scripts": {
+    "build": "tsc",
+    "postbuild": "tsfix"
+  }
+}
+```
 
-Here are the npm scripts included in this project:
+This will run `tsfix` automatically after your TypeScript compilation. Alternatively, you can run tsfix manually:
 
-- **build**: cleans the ./build directory, compiles TypeScript code to JavaScript, and applies aliases.
-- **format:check**: checks if TypeScript files are formatted according to Prettier standards.
-- **format:fix**: automatically fixes formatting issues using Prettier.
-- **lint**: lints TypeScript files with eslint (including tests and jsdoc blocks).
-- **lint:fix**: automatically fixes linting errors found by eslint.
-- **prepublishOnly**: prepares for publishing by running the build scripts.
-- **preversion**: runs clean, lint, test, and build scripts before publishing a new version.
+```sh
+npx @2bad/tsfix
+```
+
+## Example
+
+Consider the following TypeScript files:
+
+```typescript
+// src/main.ts
+import { helper } from './utils/helper.ts'
+
+// src/utils/helper.ts
+export const helper = () => 'helper function'
+```
+
+After running tsc, the compiled JavaScript files might look like this:
+
+```javascript
+// dist/main.js
+import { helper } from './utils/helper.ts'
+
+// dist/utils/helper.js
+export const helper = () => 'helper function'
+```
+
+Running tsfix will transform the import paths to:
+
+```javascript
+// dist/main.js
+import { helper } from './utils/helper.js'
+```
+
+## Contributing
+
+We welcome contributions! If you find a bug or want to request a new feature, please open an issue. If you want to submit a bug fix or new feature, please open a pull request.
