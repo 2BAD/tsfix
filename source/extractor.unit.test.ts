@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { detectFileExtension, detectSpecifierType, extractImports, extractSpecifier } from './extractor.ts'
+import { detectFileExtension, detectSpecifierType, extractImports, extractSpecifier } from './extractor.js'
 
 describe('extractImports', () => {
   const dependencies = ['react', 'lodash']

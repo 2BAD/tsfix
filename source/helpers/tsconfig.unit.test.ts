@@ -1,6 +1,6 @@
 import * as ts from 'typescript'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { findBuildDir } from './tsconfig.ts'
+import { findBuildDir } from './tsconfig.js'
 
 describe('findBuildDir', () => {
   afterEach(() => {

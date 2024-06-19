@@ -2,7 +2,7 @@ import debug from 'debug'
 import { isBuiltin } from 'node:module'
 import { extname } from 'pathe'
 import { type Except } from 'type-fest'
-import { IMPORT_TYPE, notNull, type Import } from './types.ts'
+import { IMPORT_TYPE, notNull, type Import } from './types.js'
 
 const log = debug('tsfix:extractor')
 

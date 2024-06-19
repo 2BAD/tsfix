@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { type Import } from './types.ts'
+import { type Import } from './types.js'
 
 const log = debug('tsfix:fixer')
 

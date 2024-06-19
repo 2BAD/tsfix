@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { applyFixes } from './fixer.ts'
-import { type Import } from './types.ts'
+import { applyFixes } from './fixer.js'
+import { type Import } from './types.js'
 
 describe('applyFixes', () => {
   it('should fix imports by appending .js to relative import specifiers with .ts extension', () => {

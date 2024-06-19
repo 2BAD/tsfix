@@ -1,10 +1,10 @@
 import debug from 'debug'
 import glob from 'fast-glob'
 import { readFile, writeFile } from 'node:fs/promises'
-import { extractImports } from './extractor.ts'
-import { applyFixes } from './fixer.ts'
-import { getPackageDependencies } from './helpers/package.ts'
-import { findBuildDir } from './helpers/tsconfig.ts'
+import { extractImports } from './extractor.js'
+import { applyFixes } from './fixer.js'
+import { getPackageDependencies } from './helpers/package.js'
+import { findBuildDir } from './helpers/tsconfig.js'
 
 const log = debug('tsfix:main')
 

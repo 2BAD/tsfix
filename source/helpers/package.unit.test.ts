@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { findPackageJson, getPackageDependencies } from './package.ts'
+import { findPackageJson, getPackageDependencies } from './package.js'
 
 vi.mock('node:fs/promises', () => {
   return {
