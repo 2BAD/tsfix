@@ -1,7 +1,7 @@
 import debug from 'debug'
 import { accessSync, constants } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { resolve } from 'pathe'
 import { type PackageJson } from 'type-fest'
 
 const log = debug('tsfix:package')

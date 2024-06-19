@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { dirname } from 'node:path'
+import { dirname } from 'pathe'
 import pkg from 'typescript'
 
 const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = pkg
