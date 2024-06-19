@@ -28,7 +28,7 @@ export const applyFixes = (code: string, imports: Import[]): string => {
       }
     }
     if (!fixed) {
-      log('No fixes needed for import: %o', i)
+      log('No fixes needed.')
     }
   }
   return code
