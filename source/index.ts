@@ -1,6 +1,7 @@
 import debug from 'debug'
 import glob from 'fast-glob'
 import { readFile, writeFile } from 'node:fs/promises'
+import { performance } from 'node:perf_hooks'
 import { extractImports } from './extractor.js'
 import { applyFixes } from './fixer.js'
 import { getPackageDependencies } from './helpers/package.js'
@@ -27,13 +28,22 @@ export const tsFix = async (extensions: string): Promise<void> => {
 
   log('Searching for files with extensions: %s', extensions)
   log('Using build directory: %s', options.cwd)
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  glob.stream(pattern, options).on('data', async (filePath: string): Promise<void> => {
+
+  let processedFiles = 0
+  const startTime = performance.now()
+  const stream = glob.stream(pattern, options)
+
+  for await (const filePath of stream) {
     const sourceCode = await readFile(filePath, 'utf-8')
     log('Extracting imports from file: %s', filePath)
     const imports = extractImports(sourceCode, dependencies)
     const fixedCode = applyFixes(sourceCode, imports)
     log('Fixed imports in file: %s', filePath)
     await writeFile(filePath, fixedCode)
-  })
+    processedFiles++
+  }
+
+  const endTime = performance.now()
+  const duration = (endTime - startTime).toFixed(2)
+  console.log('Successfully fixed imports in %d files (%sms)', processedFiles, duration)
 }
