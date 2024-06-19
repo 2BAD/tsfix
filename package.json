@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "keywords": [
-    "template",
     "typescript",
-    "starter"
+    "imports",
+    "fix"
   ],
   "homepage": "https://github.com/2BAD/tsfix#readme",
   "bugs": {
@@ -64,7 +64,7 @@
     "fast-glob": "3.3.2",
     "meow": "13.2.0",
     "pathe": "1.1.2",
-    "typescript": "5.4.5"
+    "typescript": "5.5.1-rc"
   },
   "devDependencies": {
     "@2bad/tsconfig": "3.0.1",
@@ -92,7 +92,7 @@
     "node": ">=20"
   },
   "volta": {
-    "node": "20.14.0",
+    "node": "22.3.0",
     "npm": "10.8.1"
   }
 }

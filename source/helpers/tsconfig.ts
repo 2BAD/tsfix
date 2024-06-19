@@ -1,8 +1,7 @@
 import debug from 'debug'
 import { dirname } from 'pathe'
-import pkg from 'typescript'
+import { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } from 'typescript'
 
-const { findConfigFile, parseJsonConfigFileContent, readConfigFile, sys } = pkg
 const log = debug('tsfix:tsconfig')
 
 /**
