@@ -67,6 +67,14 @@ Running tsfix will transform the import paths to:
 import { helper } from './utils/helper.js'
 ```
 
+## Troubleshooting
+
+The `DEBUG` environment variable can be used to figure out why it's working as you may have expected.
+
+```sh
+DEBUG=* tsfix
+```
+
 ## Contributing
 
 We welcome contributions! If you find a bug or want to request a new feature, please open an issue. If you want to submit a bug fix or new feature, please open a pull request.
