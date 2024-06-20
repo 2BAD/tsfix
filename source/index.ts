@@ -38,7 +38,6 @@ export const tsFix = async (extensions: string): Promise<void> => {
     log('Extracting imports from file: %s', filePath)
     const imports = extractImports(sourceCode, dependencies)
     const fixedCode = applyFixes(sourceCode, imports)
-    log('Fixed imports in file: %s', filePath)
     await writeFile(filePath, fixedCode)
     processedFiles++
   }
