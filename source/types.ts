@@ -1,3 +1,5 @@
+import type { Pattern } from 'fast-glob'
+
 /**
  * Type guard that checks if a value is not null.
  *
@@ -18,4 +20,9 @@ export type Import = {
   specifier: string
   type: (typeof IMPORT_TYPE)[keyof typeof IMPORT_TYPE]
   extension: string | null
+}
+
+export type Args = {
+  cwd?: string
+  pattern?: Pattern
 }
