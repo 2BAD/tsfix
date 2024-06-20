@@ -1,6 +1,6 @@
 import * as ts from 'typescript'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { findBuildDir } from './tsconfig.js'
+import { findOutDir } from './tsconfig.js'
 
 describe('findBuildDir', () => {
   afterEach(() => {
@@ -12,7 +12,7 @@ describe('findBuildDir', () => {
 
     const findConfigFileSpy = vi.spyOn(ts, 'findConfigFile').mockReturnValueOnce(undefined)
 
-    expect(() => findBuildDir()).toThrow('Unable to locate tsconfig')
+    expect(() => findOutDir()).toThrow('Unable to locate tsconfig')
     expect(findConfigFileSpy).toHaveBeenCalledTimes(1)
   })
 
@@ -27,7 +27,7 @@ describe('findBuildDir', () => {
       }
     })
 
-    expect(() => findBuildDir()).toThrow('No outDir specified in tsconfig')
+    expect(() => findOutDir()).toThrow('No outDir specified in tsconfig')
     expect(findConfigFileSpy).toHaveBeenCalledTimes(1)
     expect(readConfigFileSpy).toHaveBeenCalledTimes(1)
   })
@@ -48,7 +48,7 @@ describe('findBuildDir', () => {
       }
     })
 
-    const buildDir = findBuildDir()
+    const buildDir = findOutDir()
     expect(buildDir).toStrictEqual(outDir)
   })
 })

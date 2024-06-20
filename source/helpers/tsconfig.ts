@@ -9,7 +9,7 @@ const log = debug('tsfix:tsconfig')
  *
  * @throws {Error} If tsconfig file is not found or if no outDir is specified.
  */
-export const findBuildDir = (): string => {
+export const findOutDir = (): string => {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigPath = findConfigFile(process.cwd(), sys.fileExists)
   log('Found tsconfig.json at: %s', tsconfigPath)

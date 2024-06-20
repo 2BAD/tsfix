@@ -5,7 +5,7 @@ import { performance } from 'node:perf_hooks'
 import { extractImports } from './extractor.js'
 import { applyFixes } from './fixer.js'
 import { getPackageDependencies } from './helpers/package.js'
-import { findBuildDir } from './helpers/tsconfig.js'
+import { findOutDir } from './helpers/tsconfig.js'
 
 const log = debug('tsfix:main')
 
@@ -23,7 +23,7 @@ export const tsFix = async (extensions: string): Promise<void> => {
     absolute: true,
     baseNameMatch: true,
     braceExpansion: true,
-    cwd: findBuildDir()
+    cwd: findOutDir()
   }
 
   log('Searching for files with extensions: %s', extensions)
