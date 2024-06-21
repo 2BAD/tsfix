@@ -1,5 +1,6 @@
 import meow from 'meow'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+// @ts-expect-error its mocked anyway
 import { tsFix } from '../build/tsfix.js'
 
 vi.mock('meow')
@@ -16,8 +17,10 @@ describe('CLI', () => {
     expect.assertions(1)
     const mockFlags = { extensions: 'jsx,tsx', pattern: '*.js' }
     const mockInput: string[] = ['./dist']
+    // @ts-expect-error no need to mock all returned properties
     vi.mocked(meow).mockReturnValue({ flags: mockFlags, input: mockInput })
 
+    // @ts-expect-error this module doesn't export anything
     await import('../bin/cli.mjs')
 
     expect(tsFix).toHaveBeenCalledWith({ cwd: './dist', extensions: 'jsx,tsx', pattern: '*.js' })
