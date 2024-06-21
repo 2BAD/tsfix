@@ -1,7 +1,23 @@
 import debug from 'debug'
+import { readFile, writeFile } from 'node:fs/promises'
+import { extractImports } from './extractor.js'
 import { type Import } from './types.js'
 
 const log = debug('tsfix:fixer')
+
+/**
+ * Processes a file by extracting its imports, applying fixes, and writing the fixed code back to the file.
+ *
+ * @param filePath - The path to the file to be processed.
+ * @param dependencies - The dependencies to be considered when extracting imports.
+ */
+export const processFile = async (filePath: string | Buffer, dependencies: string[]): Promise<void> => {
+  const sourceCode = await readFile(filePath, 'utf-8')
+  log('Extracting imports from file: %s', filePath)
+  const imports = extractImports(sourceCode, dependencies)
+  const fixedCode = applyFixes(sourceCode, imports)
+  await writeFile(filePath, fixedCode)
+}
 
 /**
  * Fixes imports by appending '.js' to relative import specifiers.

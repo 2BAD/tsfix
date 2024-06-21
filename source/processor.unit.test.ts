@@ -1,6 +1,39 @@
-import { describe, expect, it } from 'vitest'
-import { applyFixes } from './fixer.js'
-import { type Import } from './types.js'
+import { readFile, writeFile } from 'node:fs/promises'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { applyFixes, processFile } from './processor.ts'
+import { type Import } from './types.ts'
+
+vi.mock('node:fs/promises', () => {
+  return {
+    readFile: vi.fn(),
+    writeFile: vi.fn()
+  }
+})
+
+describe('processFile', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('should properly process the file', async () => {
+    expect.assertions(2)
+
+    const filePath = 'test.js'
+    const sourceCode = 'import x from "./x";'
+    const dependencies = ['dependency1', 'dependency2']
+    const fixedCode = 'import x from "./x.js";'
+
+    vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
+    vi.mocked(writeFile).mockResolvedValueOnce()
+
+    await processFile(filePath, dependencies)
+
+    expect(readFile).toHaveBeenCalledWith(filePath, 'utf-8')
+    // expect(extractImportsSpy).toHaveBeenCalledWith(sourceCode, dependencies)
+    // expect(applyFixesSpy).toHaveBeenCalledWith(sourceCode, imports)
+    expect(writeFile).toHaveBeenCalledWith(filePath, fixedCode)
+  })
+})
 
 describe('applyFixes', () => {
   it('should fix imports by appending .js to relative import specifiers with .ts extension', () => {

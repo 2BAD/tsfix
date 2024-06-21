@@ -1,11 +1,9 @@
 import debug from 'debug'
 import glob, { type Options, type Pattern } from 'fast-glob'
-import { readFile, writeFile } from 'node:fs/promises'
 import { performance } from 'node:perf_hooks'
-import { extractImports } from './extractor.js'
-import { applyFixes } from './fixer.js'
 import { getPackageDependencies } from './helpers/package.js'
 import { findOutDir } from './helpers/tsconfig.js'
+import { processFile } from './processor.ts'
 import type { Args } from './types.js'
 
 const log = debug('tsfix:main')
@@ -27,20 +25,6 @@ export const setupOptions = (args: Args): { pattern: Pattern; options: Options }
       cwd: args.cwd ?? findOutDir()
     }
   }
-}
-
-/**
- * Processes a file by extracting its imports, applying fixes, and writing the fixed code back to the file.
- *
- * @param filePath - The path to the file to be processed.
- * @param dependencies - The dependencies to be considered when extracting imports.
- */
-export const processFile = async (filePath: string | Buffer, dependencies: string[]): Promise<void> => {
-  const sourceCode = await readFile(filePath, 'utf-8')
-  log('Extracting imports from file: %s', filePath)
-  const imports = extractImports(sourceCode, dependencies)
-  const fixedCode = applyFixes(sourceCode, imports)
-  await writeFile(filePath, fixedCode)
 }
 
 /**
