@@ -30,15 +30,18 @@ export const applyFixes = (code: string, imports: Import[]): string => {
     let fixed = false
     log('Processing import: %o', i)
     if (i.type === 'absolute' || i.type === 'relative') {
+      // replace .ts with .js
       if (i.extension === '.ts') {
-        // replace .ts with .js
         const fixedSpecifier = i.specifier.replace('.ts', '.js')
         code = code.replace(i.specifier, fixedSpecifier)
         fixed = true
         log('Fixed extension: %s', fixedSpecifier)
-      } else if (i.extension === null) {
-        // append .js if extension is missing
-        code = code.replace(i.specifier, i.specifier + '.js')
+      }
+      // append .js if extension is missing
+      else if (i.extension === null) {
+        // wrap specifier in quotes to avoid appending to previously processed occurrences
+        const quote = i.source.includes(`'`) ? `'` : `"`
+        code = code.replace(`${quote}${i.specifier}${quote}`, `${quote}${i.specifier}.js${quote}`)
         fixed = true
         log('Appended missing ".js" to import specifier: %s', i.specifier)
       }
