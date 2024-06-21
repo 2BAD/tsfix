@@ -20,7 +20,7 @@ export const setupOptions = (args: Args): { pattern: Pattern; options: Options }
       absolute: true,
       baseNameMatch: true,
       braceExpansion: true,
-      cwd: args.cwd ?? findOutDir()
+      ignore: ['**/node_modules/**'],
     }
   }
 }

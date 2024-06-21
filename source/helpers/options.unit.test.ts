@@ -16,6 +16,7 @@ describe('getOptions', () => {
         absolute: true,
         baseNameMatch: true,
         braceExpansion: true,
+        ignore: ['**/node_modules/**'],
         cwd: '/default/output/dir'
       }
     })
@@ -36,6 +37,7 @@ describe('getOptions', () => {
         absolute: true,
         baseNameMatch: true,
         braceExpansion: true,
+        ignore: ['**/node_modules/**'],
         cwd: '/default/output/dir'
       }
     })
@@ -56,6 +58,7 @@ describe('getOptions', () => {
         absolute: true,
         baseNameMatch: true,
         braceExpansion: true,
+        ignore: ['**/node_modules/**'],
         cwd: '/custom/cwd'
       }
     })
@@ -76,6 +79,7 @@ describe('getOptions', () => {
         absolute: true,
         baseNameMatch: true,
         braceExpansion: true,
+        ignore: ['**/node_modules/**'],
         cwd: '/custom/cwd'
       }
     })
