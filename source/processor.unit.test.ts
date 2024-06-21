@@ -29,8 +29,6 @@ describe('processFile', () => {
     await processFile(filePath, dependencies)
 
     expect(readFile).toHaveBeenCalledWith(filePath, 'utf-8')
-    // expect(extractImportsSpy).toHaveBeenCalledWith(sourceCode, dependencies)
-    // expect(applyFixesSpy).toHaveBeenCalledWith(sourceCode, imports)
     expect(writeFile).toHaveBeenCalledWith(filePath, fixedCode)
   })
 })

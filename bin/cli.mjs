@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import meow from 'meow'
-import { tsFix } from '../build/index.js'
+import { tsFix } from '../build/tsfix.js'
 
 const cli = meow(
   `
