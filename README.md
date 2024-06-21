@@ -6,12 +6,12 @@
 [![Code coverage](https://img.shields.io/codecov/c/github/2BAD/tsfix)](https://codecov.io/gh/2BAD/tsfix)
 [![Written in TypeScript](https://img.shields.io/github/languages/top/2BAD/tsfix)](https://github.com/2BAD/tsfix/search?l=typescript)
 
-This tool ensures that your compiled JavaScript files are valid ESM by replacing or appending missing extensions in the output files.
+This tool ensures that your compiled JavaScript files are valid ESM by fixing extensions in the output files.
 
 ## Features
 
-Automatically detects typescript configuration and paths.
-Handles all types of imports (absolute, relative, internal, dynamic etc.)
+- Automatically detects typescript configuration and paths.
+- Handles all types of imports (absolute, relative, internal, dynamic etc.)
 
 ## Install
 
@@ -32,7 +32,7 @@ You can use `tsfix` as a post-build script in your project. Add the following sc
 }
 ```
 
-This will run `tsfix` automatically after your TypeScript compilation. Alternatively, you can run tsfix manually:
+This will run `tsfix` automatically after your TypeScript compilation. Alternatively, you can run `tsfix` manually:
 
 ```sh
 npx @2bad/tsfix
