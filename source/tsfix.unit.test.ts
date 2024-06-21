@@ -3,8 +3,8 @@ import { Readable } from 'node:stream'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as options from './helpers/options.js'
 import * as pkg from './helpers/package.js'
-import * as processor from './processor.ts'
-import { tsFix } from './tsfix.ts'
+import * as processor from './processor.js'
+import { tsFix } from './tsfix.js'
 
 describe('tsFix', () => {
   afterEach(() => {

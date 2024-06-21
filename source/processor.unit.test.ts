@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { applyFixes, processFile } from './processor.ts'
-import { type Import } from './types.ts'
+import { applyFixes, processFile } from './processor.js'
+import { type Import } from './types.js'
 
 vi.mock('node:fs/promises', () => {
   return {

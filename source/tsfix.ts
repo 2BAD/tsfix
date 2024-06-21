@@ -3,7 +3,7 @@ import glob from 'fast-glob'
 import { performance } from 'node:perf_hooks'
 import { setupOptions } from './helpers/options.js'
 import { getPackageDependencies } from './helpers/package.js'
-import { processFile } from './processor.ts'
+import { processFile } from './processor.js'
 import type { Args } from './types.js'
 
 const log = debug('tsfix:main')

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { setupOptions, type Args } from './options.ts'
-import * as tsconfig from './tsconfig.ts'
+import { setupOptions, type Args } from './options.js'
+import * as tsconfig from './tsconfig.js'
 
 describe('getOptions', () => {
   it('should return default pattern and cwd when args is empty', () => {

@@ -1,4 +1,4 @@
-export type { Args } from './helpers/options.ts'
+export type { Args } from './helpers/options.js'
 
 /**
  * Type guard that checks if a value is not null.
