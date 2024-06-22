@@ -72,7 +72,7 @@ describe('applyFixes', () => {
     `)
   })
 
-  it('should fix imports by appending .js to relative import specifiers with .js extension', () => {
+  it('should fix imports by appending .js to relative import specifiers with "js" in its path', () => {
     expect.assertions(1)
     const code = `
       import ts from 'typescript-eslint'
@@ -112,6 +112,25 @@ describe('applyFixes', () => {
       })
 
       export default all
+    `)
+  })
+
+  it('should fix imports by appending .js to directory import specifiers', () => {
+    expect.assertions(1)
+    const code = `
+      import foo from './foo/';
+      import bar from '../bar/index';
+    `
+    const imports: Import[] = [
+      { source: "import foo from './foo'", specifier: './foo/', type: 'relative', extension: null },
+      { source: "import bar from '../bar/index'", specifier: '../bar/index', type: 'relative', extension: null }
+    ]
+
+    const result = applyFixes(code, imports)
+
+    expect(result).toBe(`
+      import foo from './foo/index.js';
+      import bar from '../bar/index.js';
     `)
   })
 })
