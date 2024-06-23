@@ -26,54 +26,33 @@ export const processFile = async (filePath: string | Buffer, dependencies: strin
  *
  * @param code - The original source code.
  * @param imports - An array of parsed import objects.
+ * @param dirPath - The directory path of the file being processed.
  */
 export const applyFixes = async (code: string, imports: Import[], dirPath: string): Promise<string> => {
   for (const i of imports) {
-    log('Processing import: %o', i)
     if (i.type === 'absolute' || i.type === 'relative') {
-      // append "index.js" for folder imports
+      log('Processing import: %o', i)
+      let fixedSpecifier
+
       if (i.specifier.endsWith('/')) {
-        const fixedSpecifier = `${i.specifier}index.js`
-        const importPath = resolve(dirPath, fixedSpecifier)
-        log('Resolved import path: %s', importPath)
-        try {
-          await access(importPath, constants.F_OK)
-          code = code.replace(i.specifier, fixedSpecifier)
-          log('Appended missing "index.js" to import specifier: %s', i.specifier)
-        } catch (error) {
-          console.error('File not found: %s', importPath)
-        }
+        fixedSpecifier = `${i.specifier}index.js`
+      } else if (i.extension === '.ts') {
+        fixedSpecifier = i.specifier.replace('.ts', '.js')
+      } else if (i.extension === null) {
+        fixedSpecifier = `${i.specifier}.js`
       }
 
-      // replace .ts with .js
-      if (i.extension === '.ts') {
-        const fixedSpecifier = i.specifier.replace('.ts', '.js')
-        const importPath = resolve(dirPath, fixedSpecifier)
-        log('Resolved import path: %s', importPath)
-        try {
-          await access(importPath, constants.F_OK)
-          code = code.replace(i.specifier, fixedSpecifier)
-          log('Fixed extension: %s', fixedSpecifier)
-        } catch (error) {
-          console.error('File not found: %s', importPath)
-        }
-      }
-
-      // append .js if extension is missing
-      else if (i.extension === null) {
-        // wrap specifier in quotes to avoid appending to previously processed occurrences
-        const quote = i.source.includes(`'`) ? `'` : `"`
-
-        const fixedSpecifier = `${i.specifier}.js`
+      if (fixedSpecifier) {
         const importPath = resolve(dirPath, fixedSpecifier)
         log('Resolved import path: %s', importPath)
 
         try {
           await access(importPath, constants.F_OK)
+          const quote = i.source.includes(`'`) ? `'` : `"`
           code = code.replace(`${quote}${i.specifier}${quote}`, `${quote}${fixedSpecifier}${quote}`)
-          log('Appended missing ".js" to import specifier: %s', i.specifier)
-        } catch (error) {
-          log('File not found: %s', importPath)
+          log('Fixed import specifier: %s', i.specifier)
+        } catch {
+          console.error('Unable to find file at import path: %s', importPath)
         }
       }
     }
