@@ -8,7 +8,7 @@ vi.mock('../build/tsfix.js', () => ({
   tsFix: vi.fn()
 }))
 
-describe('CLI', () => {
+describe('cli', () => {
   afterEach(() => {
     vi.restoreAllMocks()
   })

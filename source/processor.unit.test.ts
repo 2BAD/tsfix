@@ -1,10 +1,11 @@
+import type fs from 'node:fs/promises'
 import { access, readFile, stat, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { applyFixes, processFile } from './processor.js'
-import { type Import } from './types.js'
+import type { Import } from './types.js'
 
 vi.mock('node:fs/promises', async (importOriginal) => {
-  const original = await importOriginal<typeof import('node:fs/promises')>()
+  const original = await importOriginal<typeof fs>()
   return {
     ...original,
     access: vi.fn(),
@@ -155,9 +156,8 @@ describe('applyFixes', () => {
     ]
     const dirPath = '/path/to/file'
 
-    vi.mocked(stat).mockResolvedValueOnce({
-      isDirectory: () => true
-    } as any) // Mock the stats object with isDirectory returning true
+    // eslint-disable-next-line
+    vi.mocked(stat).mockResolvedValueOnce({ isDirectory: () => true } as any)
 
     const result = await applyFixes(code, imports, dirPath)
 
@@ -176,7 +176,7 @@ describe('applyFixes', () => {
       { source: "import { foo } from './bar'", specifier: './bar', type: 'relative', extension: null }
     ]
     const dirPath = '/path/to/file'
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
 
     vi.mocked(access).mockRejectedValueOnce(new Error('File not found'))
 

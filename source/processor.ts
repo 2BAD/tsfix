@@ -41,7 +41,8 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
       } else if (i.extension === null) {
         const importPath = resolve(dirPath, i.specifier)
         const stats = await stat(importPath)
-        if (stats && stats.isDirectory()) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (stats?.isDirectory()) {
           fixedSpecifier = `${i.specifier}/index.js`
         } else {
           fixedSpecifier = `${i.specifier}.js`
@@ -54,7 +55,7 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
 
         try {
           await access(importPath, constants.F_OK)
-          const quote = i.source.includes(`'`) ? `'` : `"`
+          const quote = i.source.includes("'") ? "'" : '"'
           code = code.replace(`${quote}${i.specifier}${quote}`, `${quote}${fixedSpecifier}${quote}`)
           log('Fixed import specifier: %s', i.specifier)
         } catch {
