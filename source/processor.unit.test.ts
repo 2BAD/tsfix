@@ -1,10 +1,13 @@
-import { readFile, writeFile } from 'node:fs/promises'
+import { access, readFile, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { applyFixes, processFile } from './processor.js'
 import { type Import } from './types.js'
 
-vi.mock('node:fs/promises', () => {
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const original = await importOriginal<typeof import('node:fs/promises')>()
   return {
+    ...original,
+    access: vi.fn(),
     readFile: vi.fn(),
     writeFile: vi.fn()
   }
@@ -34,7 +37,7 @@ describe('processFile', () => {
 })
 
 describe('applyFixes', () => {
-  it('should fix imports by appending .js to relative import specifiers with .ts extension', () => {
+  it('should fix imports by replacing .ts to relative import specifiers with .js extension', async () => {
     expect.assertions(1)
     const code = `
       import { foo } from './bar.ts';
@@ -44,8 +47,10 @@ describe('applyFixes', () => {
       { source: "import { foo } from './bar.ts'", specifier: './bar.ts', type: 'relative', extension: '.ts' },
       { source: "import { baz } from '../qux.ts'", specifier: '../qux.ts', type: 'relative', extension: '.ts' }
     ]
+    const dirPath = '/path/to/file'
+    vi.mocked(access).mockResolvedValue()
 
-    const result = applyFixes(code, imports)
+    const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
       import { foo } from './bar.js';
@@ -53,7 +58,7 @@ describe('applyFixes', () => {
     `)
   })
 
-  it('should fix imports by appending .js to relative import specifiers with missing extension', () => {
+  it('should fix imports by appending .js to relative import specifiers with missing extension', async () => {
     expect.assertions(1)
     const code = `
       import { foo } from './bar';
@@ -63,8 +68,10 @@ describe('applyFixes', () => {
       { source: "import { foo } from './bar'", specifier: './bar', type: 'relative', extension: null },
       { source: "import { baz } from '../qux'", specifier: '../qux', type: 'relative', extension: null }
     ]
+    const dirPath = '/path/to/file'
+    vi.mocked(access).mockResolvedValue()
 
-    const result = applyFixes(code, imports)
+    const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
       import { foo } from './bar.js';
@@ -72,7 +79,7 @@ describe('applyFixes', () => {
     `)
   })
 
-  it('should fix imports by appending .js to relative import specifiers with "js" in its path', () => {
+  it('should fix imports by appending .js to relative import specifiers with "js" in its path and code', async () => {
     expect.assertions(1)
     const code = `
       import ts from 'typescript-eslint'
@@ -99,8 +106,10 @@ describe('applyFixes', () => {
         extension: '.ts'
       }
     ]
+    const dirPath = '/path/to/file'
+    vi.mocked(access).mockResolvedValue()
 
-    const result = applyFixes(code, imports)
+    const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
       import ts from 'typescript-eslint'
@@ -115,7 +124,7 @@ describe('applyFixes', () => {
     `)
   })
 
-  it('should fix imports by appending .js to directory import specifiers', () => {
+  it('should fix imports by appending .js to directory import specifiers', async () => {
     expect.assertions(1)
     const code = `
       import foo from './foo/';
@@ -125,8 +134,10 @@ describe('applyFixes', () => {
       { source: "import foo from './foo'", specifier: './foo/', type: 'relative', extension: null },
       { source: "import bar from '../bar/index'", specifier: '../bar/index', type: 'relative', extension: null }
     ]
+    const dirPath = '/path/to/file'
+    vi.mocked(access).mockResolvedValue()
 
-    const result = applyFixes(code, imports)
+    const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
       import foo from './foo/index.js';
