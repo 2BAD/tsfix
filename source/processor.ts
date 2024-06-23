@@ -31,6 +31,20 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
   for (const i of imports) {
     log('Processing import: %o', i)
     if (i.type === 'absolute' || i.type === 'relative') {
+      // append "index.js" for folder imports
+      if (i.specifier.endsWith('/')) {
+        const fixedSpecifier = `${i.specifier}index.js`
+        const importPath = resolve(dirPath, fixedSpecifier)
+        log('Resolved import path: %s', importPath)
+        try {
+          await access(importPath, constants.F_OK)
+          code = code.replace(i.specifier, fixedSpecifier)
+          log('Appended missing "index.js" to import specifier: %s', i.specifier)
+        } catch (error) {
+          console.error('File not found: %s', importPath)
+        }
+      }
+
       // replace .ts with .js
       if (i.extension === '.ts') {
         const fixedSpecifier = i.specifier.replace('.ts', '.js')
@@ -44,6 +58,7 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
           console.error('File not found: %s', importPath)
         }
       }
+
       // append .js if extension is missing
       else if (i.extension === null) {
         // wrap specifier in quotes to avoid appending to previously processed occurrences
