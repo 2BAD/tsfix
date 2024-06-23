@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { access, constants, readFile, writeFile } from 'node:fs/promises'
+import { access, constants, readFile, stat, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'pathe'
 import { extractImports } from './extractor.js'
 import { type Import } from './types.js'
@@ -39,7 +39,13 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
       } else if (i.extension === '.ts') {
         fixedSpecifier = i.specifier.replace('.ts', '.js')
       } else if (i.extension === null) {
-        fixedSpecifier = `${i.specifier}.js`
+        const importPath = resolve(dirPath, i.specifier)
+        const stats = await stat(importPath)
+        if (stats && stats.isDirectory()) {
+          fixedSpecifier = `${i.specifier}/index.js`
+        } else {
+          fixedSpecifier = `${i.specifier}.js`
+        }
       }
 
       if (fixedSpecifier) {
