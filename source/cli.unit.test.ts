@@ -1,6 +1,7 @@
 import meow from 'meow'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 // @ts-expect-error its mocked anyway
+// eslint-disable-next-line import/no-unresolved
 import { tsFix } from '../build/tsfix.js'
 
 vi.mock('meow')
