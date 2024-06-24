@@ -21,7 +21,8 @@ jobs:
           - 22
         os-release:
           - ubuntu-latest
-          - windows-latest
+          # do not run tests on windows until vite issue with importing file with shebang is resolved
+          # - windows-latest
 
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4
