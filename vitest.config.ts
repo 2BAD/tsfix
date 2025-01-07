@@ -1,11 +1,13 @@
+/* eslint-disable import-x/no-default-export */
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { configDefaults, defineConfig } from 'vitest/config'
+import { coverageConfigDefaults, defineConfig } from 'vitest/config'
 
+// biome-ignore lint/style/noDefaultExport: allow default export for vitest config
 export default defineConfig({
   test: {
-    exclude: [...configDefaults.exclude, 'build'],
+    exclude: ['build', 'node_modules'],
     coverage: {
-      exclude: [...(configDefaults.coverage.exclude ?? []), 'build'],
+      exclude: ['build', ...coverageConfigDefaults.exclude],
       provider: 'v8'
     },
     testTimeout: 30000
