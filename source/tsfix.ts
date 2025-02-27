@@ -1,5 +1,5 @@
 import debug from 'debug'
-import glob from 'fast-glob'
+import { stream as globStream } from 'fast-glob'
 import { performance } from 'node:perf_hooks'
 import { setupOptions } from './helpers/options.js'
 import { getPackageDependencies } from './helpers/package.js'
@@ -15,17 +15,18 @@ const log = debug('tsfix:main')
  */
 export const tsFix = async (args: Args): Promise<void> => {
   const dependencies = await getPackageDependencies()
-  const { pattern, options } = setupOptions(args)
+  const { pattern, options, mode } = setupOptions(args)
 
   log('Searching for files with extensions: %s', pattern)
   log('Using build directory: %s', options.cwd)
+  log('Using extraction mode: %s', mode)
 
   let processedFiles = 0
   const startTime = performance.now()
-  const stream = glob.stream(pattern, options)
+  const stream = globStream(pattern, options)
 
   for await (const filePath of stream) {
-    await processFile(filePath, dependencies)
+    await processFile(filePath, dependencies, mode)
     processedFiles++
   }
 

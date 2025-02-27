@@ -1,3 +1,4 @@
+/* eslint-disable jsdoc/require-jsdoc */
 import type fs from 'node:fs/promises'
 import { access, readFile, stat, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -30,6 +31,7 @@ describe('processFile', () => {
 
     vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
     vi.mocked(writeFile).mockResolvedValueOnce()
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as any)
 
     await processFile(filePath, dependencies)
 
@@ -78,6 +80,7 @@ describe('applyFixes', () => {
     ]
     const dirPath = '/path/to/file'
     vi.mocked(access).mockResolvedValue()
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as any)
 
     const result = await applyFixes(code, imports, dirPath)
 
@@ -107,6 +110,7 @@ describe('applyFixes', () => {
     ]
     const dirPath = '/path/to/file'
     vi.mocked(access).mockResolvedValue()
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as any)
 
     const result = await applyFixes(code, imports, dirPath)
 
@@ -136,6 +140,15 @@ describe('applyFixes', () => {
     ]
     const dirPath = '/path/to/file'
     vi.mocked(access).mockResolvedValue()
+
+    // First call for './foo/' - it's a directory
+    // Second call for '../bar/index' - it's a file
+    vi.mocked(stat).mockImplementation(async (path) => {
+      if (path.toString().includes('foo')) {
+        return { isDirectory: () => true } as any
+      }
+      return { isDirectory: () => false } as any
+    })
 
     const result = await applyFixes(code, imports, dirPath)
 
@@ -178,6 +191,7 @@ describe('applyFixes', () => {
     const dirPath = '/path/to/file'
     const consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
 
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as any)
     vi.mocked(access).mockRejectedValueOnce(new Error('File not found'))
 
     const result = await applyFixes(code, imports, dirPath)

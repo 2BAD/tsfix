@@ -2,7 +2,7 @@ import debug from 'debug'
 import { access, constants, readFile, stat, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'pathe'
 import { extractImports } from './extractor.js'
-import { type Import } from './types.js'
+import type { Import, Mode } from './types.js'
 
 const log = debug('tsfix:fixer')
 
@@ -11,12 +11,17 @@ const log = debug('tsfix:fixer')
  *
  * @param filePath - The path to the file to be processed.
  * @param dependencies - The dependencies to be considered when extracting imports.
+ * @param mode - The extraction mode ('regex' or 'ast').
  */
-export const processFile = async (filePath: string | Buffer, dependencies: string[]): Promise<void> => {
+export const processFile = async (
+  filePath: string | Buffer,
+  dependencies: string[],
+  mode: Mode = 'regex'
+): Promise<void> => {
   const sourceCode = await readFile(filePath, 'utf-8')
-  log('Extracting imports from file: %s', filePath)
+  log('Extracting imports from file: %s using %s mode', filePath, mode)
   const dirPath = dirname(filePath.toString())
-  const imports = extractImports(sourceCode, dependencies)
+  const imports = extractImports(sourceCode, dependencies, mode)
   const fixedCode = await applyFixes(sourceCode, imports, dirPath)
   await writeFile(filePath, fixedCode)
 }
@@ -32,7 +37,7 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
   for (const i of imports) {
     if (i.type === 'absolute' || i.type === 'relative') {
       log('Processing import: %o', i)
-      let fixedSpecifier
+      let fixedSpecifier: string | undefined
 
       if (i.specifier.endsWith('/')) {
         fixedSpecifier = `${i.specifier}index.js`
@@ -41,8 +46,7 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
       } else if (i.extension === null) {
         const importPath = resolve(dirPath, i.specifier)
         const stats = await stat(importPath)
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (stats?.isDirectory()) {
+        if (stats.isDirectory()) {
           fixedSpecifier = `${i.specifier}/index.js`
         } else {
           fixedSpecifier = `${i.specifier}.js`
@@ -56,6 +60,7 @@ export const applyFixes = async (code: string, imports: Import[], dirPath: strin
         try {
           await access(importPath, constants.F_OK)
           const quote = i.source.includes("'") ? "'" : '"'
+          // biome-ignore lint/style/noParameterAssign: replace the imports if possible otherwise return the original code
           code = code.replace(`${quote}${i.specifier}${quote}`, `${quote}${fixedSpecifier}${quote}`)
           log('Fixed import specifier: %s', i.specifier)
         } catch {

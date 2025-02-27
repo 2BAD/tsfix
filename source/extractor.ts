@@ -1,8 +1,19 @@
 import debug from 'debug'
 import { isBuiltin } from 'node:module'
 import { extname } from 'pathe'
-import { type Except } from 'type-fest'
-import { IMPORT_TYPE, notNull, type Import } from './types.js'
+import type { Except } from 'type-fest'
+import {
+  ScriptTarget,
+  SyntaxKind,
+  createSourceFile,
+  forEachChild,
+  isCallExpression,
+  isExportDeclaration,
+  isImportDeclaration,
+  isStringLiteral,
+  type Node
+} from 'typescript'
+import { IMPORT_TYPE, notNull, type Import, type Mode } from './types.js'
 
 const log = debug('tsfix:extractor')
 
@@ -58,23 +69,90 @@ export const detectFileExtension = (i: Except<Import, 'extension'>): Import => {
 }
 
 /**
- * Parses the import statements from the given code string.
+ * Extracts imports using TypeScript's AST.
  *
  * @param code - The source code string.
  * @param dependencies - List of package dependencies
  */
-export const extractImports = (code: string, dependencies: string[]): Import[] => {
+export const extractImportsAst = (code: string, dependencies: string[]): Import[] => {
+  const sourceFile = createSourceFile('temp.ts', code, ScriptTarget.Latest, true)
+
+  const imports: Except<Import, 'type' | 'extension'>[] = []
+
+  /**
+   * Recursively visit nodes in the AST to find imports.
+   *
+   * @param node - The current TypeScript AST node
+   */
+  const visit = (node: Node): void => {
+    // Handle import declarations (import * from 'module')
+    if (isImportDeclaration(node) && node.moduleSpecifier && isStringLiteral(node.moduleSpecifier)) {
+      const specifier = node.moduleSpecifier.text
+      imports.push({
+        source: node.getText(),
+        specifier
+      })
+    } else if (isExportDeclaration(node) && node.moduleSpecifier && isStringLiteral(node.moduleSpecifier)) {
+      // Handle export declarations with module specifier (export * from 'module')
+      const specifier = node.moduleSpecifier.text
+      imports.push({
+        source: node.getText(),
+        specifier
+      })
+    } else if (
+      isCallExpression(node) &&
+      node.expression.kind === SyntaxKind.ImportKeyword &&
+      node.arguments[0] &&
+      isStringLiteral(node.arguments[0])
+    ) {
+      // Handle dynamic imports (import('module'))
+      const specifier = node.arguments[0].text
+      imports.push({
+        source: node.getText(),
+        specifier
+      })
+    }
+
+    forEachChild(node, visit)
+  }
+
+  visit(sourceFile)
+
+  const processedImports = imports.map(detectSpecifierType(dependencies)).map(detectFileExtension)
+
+  log('Found %d imports statements using AST: %o', processedImports.length, processedImports)
+  return processedImports
+}
+
+/**
+ * Parses the import statements from the given code string using regex.
+ *
+ * @param code - The source code string.
+ * @param dependencies - List of package dependencies
+ */
+export const extractImportsRegex = (code: string, dependencies: string[]): Import[] => {
   const statements = code.match(IMPORT_REGEX)
   if (statements === null || statements.length === 0) {
     return []
-  } else {
-    const imports = statements
-      .map(extractSpecifier)
-      .filter(notNull)
-      .map(detectSpecifierType(dependencies))
-      .map(detectFileExtension)
-
-    log('Found %d imports statements: %o', imports.length, imports)
-    return imports
   }
+
+  const imports = statements
+    .map(extractSpecifier)
+    .filter(notNull)
+    .map(detectSpecifierType(dependencies))
+    .map(detectFileExtension)
+
+  log('Found %d imports statements: %o', imports.length, imports)
+  return imports
+}
+
+/**
+ * Parses the import statements from the given code string using the specified mode.
+ *
+ * @param code - The source code string.
+ * @param dependencies - List of package dependencies
+ * @param mode - The extraction mode ('regex' or 'ast')
+ */
+export const extractImports = (code: string, dependencies: string[], mode: Mode = 'regex'): Import[] => {
+  return mode === 'ast' ? extractImportsAst(code, dependencies) : extractImportsRegex(code, dependencies)
 }

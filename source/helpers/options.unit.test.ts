@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { setupOptions, type Args } from './options.js'
+// biome-ignore lint/style/noNamespaceImport: needed for mocking
 import * as tsconfig from './tsconfig.js'
 
 describe('getOptions', () => {
@@ -12,6 +13,7 @@ describe('getOptions', () => {
 
     expect(result).toStrictEqual({
       pattern: '*.{js}',
+      mode: 'regex',
       options: {
         absolute: true,
         baseNameMatch: true,
@@ -33,6 +35,7 @@ describe('getOptions', () => {
 
     expect(result).toStrictEqual({
       pattern: '*.ts',
+      mode: 'regex',
       options: {
         absolute: true,
         baseNameMatch: true,
@@ -54,6 +57,7 @@ describe('getOptions', () => {
 
     expect(result).toStrictEqual({
       pattern: '*.{js}',
+      mode: 'regex',
       options: {
         absolute: true,
         baseNameMatch: true,
@@ -75,6 +79,7 @@ describe('getOptions', () => {
 
     expect(result).toStrictEqual({
       pattern: '*.ts',
+      mode: 'regex',
       options: {
         absolute: true,
         baseNameMatch: true,
@@ -85,5 +90,27 @@ describe('getOptions', () => {
     })
 
     expect(findOutDirSpy).not.toHaveBeenCalled()
+  })
+
+  it('should return provided mode', () => {
+    expect.assertions(2)
+    const findOutDirSpy = vi.spyOn(tsconfig, 'findOutDir').mockReturnValueOnce('/default/output/dir')
+
+    const args: Args = { mode: 'ast' }
+    const result = setupOptions(args)
+
+    expect(result).toStrictEqual({
+      pattern: '*.{js}',
+      mode: 'ast',
+      options: {
+        absolute: true,
+        baseNameMatch: true,
+        braceExpansion: true,
+        ignore: ['**/node_modules/**'],
+        cwd: '/default/output/dir'
+      }
+    })
+
+    expect(findOutDirSpy).toHaveBeenCalledTimes(1)
   })
 })
