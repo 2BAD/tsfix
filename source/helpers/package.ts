@@ -35,6 +35,10 @@ export const getPackageDependencies = async (): Promise<string[]> => {
 
   try {
     const packageData = await readFile(path, 'utf-8')
+    if (!packageData) {
+      return []
+    }
+
     const packageJson = JSON.parse(packageData) as PackageJson
     const dependencies = packageJson.dependencies ?? {}
     const devDependencies = packageJson.devDependencies ?? {}

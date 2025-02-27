@@ -66,12 +66,12 @@ describe('getPackageDependencies', () => {
     expect(result).toStrictEqual([])
   })
 
-  // it('should return an empty array if package.json is not found', async () => {
-  //   expect.assertions(1)
+  it('should return an empty array if package.json is not found', async () => {
+    expect.assertions(1)
 
-  //   const result = await getPackageDependencies()
-  //   expect(result).toStrictEqual([])
-  // })
+    const result = await getPackageDependencies()
+    expect(result).toStrictEqual([])
+  })
 
   it('should handle error gracefully', async () => {
     expect.assertions(2)
