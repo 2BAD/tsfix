@@ -2,7 +2,7 @@ import debug from 'debug'
 import { accessSync, constants } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'pathe'
-import { type PackageJson } from 'type-fest'
+import type { PackageJson } from 'type-fest'
 
 const log = debug('tsfix:package')
 
@@ -29,7 +29,9 @@ export const findPackageJson = (cwd?: string): string | null => {
  */
 export const getPackageDependencies = async (): Promise<string[]> => {
   const path = findPackageJson()
-  if (!path) return []
+  if (!path) {
+    return []
+  }
 
   try {
     const packageData = await readFile(path, 'utf-8')

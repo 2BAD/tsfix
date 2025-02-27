@@ -1,7 +1,5 @@
 import meow from 'meow'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-// @ts-expect-error its mocked anyway
-// eslint-disable-next-line import/no-unresolved
 import { tsFix } from '../build/tsfix.js'
 
 vi.mock('meow')
@@ -14,16 +12,20 @@ describe('cli', () => {
     vi.restoreAllMocks()
   })
 
-  it('should call tsFix with provided options when arguments are provided', async () => {
+  it('should call tsFix with correct options', async () => {
     expect.assertions(1)
-    const mockFlags = { extensions: 'jsx,tsx', pattern: '*.js' }
+
+    const mockFlags = { extensions: 'jsx,tsx', pattern: '*.js', mode: 'regex' }
     const mockInput: string[] = ['./dist']
     // @ts-expect-error no need to mock all returned properties
     vi.mocked(meow).mockReturnValue({ flags: mockFlags, input: mockInput })
 
-    // @ts-expect-error this module doesn't export anything
-    await import('../bin/cli.mjs')
-
-    expect(tsFix).toHaveBeenCalledWith({ cwd: './dist', extensions: 'jsx,tsx', pattern: '*.js' })
+    try {
+      // @ts-expect-error this module doesn't export anything
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _cliModule = await import('../bin/cli.mjs')
+    } finally {
+      expect(tsFix).toHaveBeenCalledWith({ cwd: './dist', extensions: 'jsx,tsx', pattern: '*.js', mode: 'regex' })
+    }
   })
 })

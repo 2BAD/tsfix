@@ -10,7 +10,6 @@ const log = debug('tsfix:tsconfig')
  * @throws {Error} If tsconfig file is not found or if no outDir is specified.
  */
 export const findOutDir = (): string => {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigPath = findConfigFile(process.cwd(), sys.fileExists)
   log('Found tsconfig.json at: %s', tsconfigPath)
 
@@ -18,7 +17,6 @@ export const findOutDir = (): string => {
     throw new Error('Unable to locate tsconfig')
   }
 
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const tsconfigFile = readConfigFile(tsconfigPath, sys.readFile)
   const parsedTsconfig = parseJsonConfigFileContent(tsconfigFile.config, sys, dirname(tsconfigPath))
 

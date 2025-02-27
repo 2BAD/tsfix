@@ -1,5 +1,5 @@
 {
-  "extends": "@2bad/tsconfig",
+  "extends": "@2bad/tsconfig/tsconfig.json",
   "include": ["source/**/*", "vitest.config.ts"],
   "compilerOptions": {
     "outDir": "build",
