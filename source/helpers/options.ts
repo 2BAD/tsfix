@@ -1,6 +1,6 @@
 import type { Options, Pattern } from 'fast-glob'
 import { resolve } from 'pathe'
-import { findOutDir } from './tsconfig.js'
+import { findOutDir } from './tsconfig.ts'
 
 export type Mode = 'regex' | 'ast'
 

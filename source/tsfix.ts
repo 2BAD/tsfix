@@ -1,10 +1,10 @@
 import debug from 'debug'
 import glob from 'fast-glob'
 import { performance } from 'node:perf_hooks'
-import { setupOptions } from './helpers/options.js'
-import { getPackageDependencies } from './helpers/package.js'
-import { processFile } from './processor.js'
-import type { Args } from './types.js'
+import { setupOptions } from './helpers/options.ts'
+import { getPackageDependencies } from './helpers/package.ts'
+import { processFile } from './processor.ts'
+import type { Args } from './types.ts'
 
 const log = debug('tsfix:main')
 

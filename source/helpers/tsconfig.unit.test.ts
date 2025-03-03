@@ -1,7 +1,7 @@
 // biome-ignore lint/style/noNamespaceImport: needed for mocking
 import * as typescript from 'typescript'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { findOutDir } from './tsconfig.js'
+import { findOutDir } from './tsconfig.ts'
 
 vi.mock('typescript', async () => {
   const actual = await vi.importActual('typescript')

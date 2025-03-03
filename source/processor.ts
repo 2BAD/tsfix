@@ -1,8 +1,8 @@
 import debug from 'debug'
 import { access, constants, readFile, stat, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'pathe'
-import { extractImports } from './extractor.js'
-import type { Import, Mode } from './types.js'
+import { extractImports } from './extractor.ts'
+import type { Import, Mode } from './types.ts'
 
 const log = debug('tsfix:fixer')
 

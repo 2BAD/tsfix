@@ -1,6 +1,6 @@
 import meow from 'meow'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { tsFix } from '../build/tsfix.js'
+import { tsFix } from '../build/tsfix.ts'
 
 vi.mock('meow')
 vi.mock('../build/tsfix.js', () => ({

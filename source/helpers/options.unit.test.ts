@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
-import { setupOptions, type Args } from './options.js'
+import { setupOptions, type Args } from './options.ts'
 // biome-ignore lint/style/noNamespaceImport: needed for mocking
-import * as tsconfig from './tsconfig.js'
+import * as tsconfig from './tsconfig.ts'
 
 describe('getOptions', () => {
   it('should return default pattern and cwd when args is empty', () => {

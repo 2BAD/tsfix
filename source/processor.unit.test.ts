@@ -3,8 +3,8 @@ import type { Stats } from 'node:fs'
 import type fs from 'node:fs/promises'
 import { access, readFile, stat, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { applyFixes, processFile } from './processor.js'
-import type { Import } from './types.js'
+import { applyFixes, processFile } from './processor.ts'
+import type { Import } from './types.ts'
 
 vi.mock('node:fs/promises', async (importOriginal) => {
   const original = await importOriginal<typeof fs>()
@@ -28,7 +28,7 @@ describe('processFile', () => {
     const filePath = 'test.js'
     const sourceCode = 'import x from "./testFolder/x";'
     const dependencies = ['dependency1', 'dependency2']
-    const fixedCode = 'import x from "./testFolder/x.js";'
+    const fixedCode = 'import x from "./testFolder/x.ts";'
 
     vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
     vi.mocked(writeFile).mockResolvedValueOnce()
@@ -63,8 +63,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar.js';
-      import { baz } from '../qux.js';
+      import { foo } from './bar.ts';
+      import { baz } from '../qux.ts';
     `)
   })
 
@@ -86,8 +86,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar.js';
-      import { baz } from '../qux.js';
+      import { foo } from './bar.ts';
+      import { baz } from '../qux.ts';
     `)
   })
 
@@ -117,7 +117,7 @@ describe('applyFixes', () => {
 
     expect(result).toBe(`
       import ts from 'typescript-eslint'
-      import * as js from './js.js'
+      import * as js from './js.ts'
 
       const all: Linter.FlatConfig = Object.freeze({
         ...js.configs.all,
@@ -154,8 +154,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import foo from './foo/index.js';
-      import bar from '../bar/index.js';
+      import foo from './foo/index.ts';
+      import bar from '../bar/index.ts';
     `)
   })
 
@@ -175,7 +175,7 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar/index.js';
+      import { foo } from './bar/index.ts';
     `)
   })
 

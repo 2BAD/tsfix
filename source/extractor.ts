@@ -13,7 +13,7 @@ import {
   isStringLiteral,
   type Node
 } from 'typescript'
-import { IMPORT_TYPE, notNull, type Import, type Mode } from './types.js'
+import { IMPORT_TYPE, notNull, type Import, type Mode } from './types.ts'
 
 const log = debug('tsfix:extractor')
 
