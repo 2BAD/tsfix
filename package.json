@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "description": "",
   "keywords": [
-    "typescript",
+    "esm",
+    "fix",
     "imports",
-    "fix"
+    "typescript"
   ],
   "homepage": "https://github.com/2BAD/tsfix#readme",
   "bugs": {
@@ -36,9 +37,9 @@
   "scripts": {
     "prebuild": "rimraf build",
     "build": "run-p build:*",
-    "postbuild": "run-s fix:alias fix:ext",
     "build:swc": "swc ./source -d ./build --strip-leading-paths",
     "build:types": "tsc --project tsconfig.build.json",
+    "postbuild": "run-s fix:alias fix:ext",
     "check": "run-p check:*",
     "check:eslint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "check:biome": "biome check ./source",
