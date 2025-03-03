@@ -1,5 +1,5 @@
 import debug from 'debug'
-import { stream as globStream } from 'fast-glob'
+import glob from 'fast-glob'
 import { performance } from 'node:perf_hooks'
 import { setupOptions } from './helpers/options.js'
 import { getPackageDependencies } from './helpers/package.js'
@@ -23,7 +23,7 @@ export const tsFix = async (args: Args): Promise<void> => {
 
   let processedFiles = 0
   const startTime = performance.now()
-  const stream = globStream(pattern, options)
+  const stream = glob.stream(pattern, options)
 
   for await (const filePath of stream) {
     await processFile(filePath, dependencies, mode)
