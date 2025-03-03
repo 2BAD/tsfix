@@ -28,7 +28,7 @@ describe('processFile', () => {
     const filePath = 'test.js'
     const sourceCode = 'import x from "./testFolder/x";'
     const dependencies = ['dependency1', 'dependency2']
-    const fixedCode = 'import x from "./testFolder/x.ts";'
+    const fixedCode = 'import x from "./testFolder/x.js";'
 
     vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
     vi.mocked(writeFile).mockResolvedValueOnce()
@@ -63,8 +63,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar.ts';
-      import { baz } from '../qux.ts';
+      import { foo } from './bar.js';
+      import { baz } from '../qux.js';
     `)
   })
 
@@ -86,8 +86,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar.ts';
-      import { baz } from '../qux.ts';
+      import { foo } from './bar.js';
+      import { baz } from '../qux.js';
     `)
   })
 
@@ -117,7 +117,7 @@ describe('applyFixes', () => {
 
     expect(result).toBe(`
       import ts from 'typescript-eslint'
-      import * as js from './js.ts'
+      import * as js from './js.js'
 
       const all: Linter.FlatConfig = Object.freeze({
         ...js.configs.all,
@@ -154,8 +154,8 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import foo from './foo/index.ts';
-      import bar from '../bar/index.ts';
+      import foo from './foo/index.js';
+      import bar from '../bar/index.js';
     `)
   })
 
@@ -175,7 +175,7 @@ describe('applyFixes', () => {
     const result = await applyFixes(code, imports, dirPath)
 
     expect(result).toBe(`
-      import { foo } from './bar/index.ts';
+      import { foo } from './bar/index.js';
     `)
   })
 
