@@ -1,4 +1,6 @@
 import debug from 'debug'
+// fast-glob is a cjs module
+// eslint-disable-next-line import-x/no-named-as-default
 import glob from 'fast-glob'
 import { performance } from 'node:perf_hooks'
 import { setupOptions } from './helpers/options.ts'

@@ -1,6 +1,8 @@
 /* eslint-disable vitest/no-hooks */
 import debug from 'debug'
 import { execa } from 'execa'
+// fast-glob is a cjs module
+// eslint-disable-next-line import-x/no-named-as-default
 import glob from 'fast-glob'
 import { promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
