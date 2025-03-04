@@ -1,6 +1,7 @@
 /* eslint-disable vitest/no-hooks */
 import debug from 'debug'
 import { execa } from 'execa'
+import glob from 'fast-glob'
 import { promises as fs } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -191,37 +192,31 @@ test('Integration test with CLI (AST mode)', async () => {
 })
 
 /**
- * Finds JavaScript files with import statements.
+ * Finds JavaScript files with import statements
  *
  * @param dir - Directory to scan recursively for JS files with imports
  * @returns Array of file paths containing import statements
  */
-async function findJsFilesWithImports(dir: string): Promise<string[]> {
-  const result: string[] = []
+async function findJsFilesWithImports(dir: string): Promise<(string | Buffer)[]> {
+  const result = []
+  const pattern = '**/*.js'
+  const options = {
+    cwd: dir,
+    absolute: true,
+    onlyFiles: true,
+    followSymbolicLinks: false
+  }
 
-  /**
-   * Recursively scans a directory for JS files with imports.
-   *
-   * @param directory - Directory to scan
-   */
-  async function scan(directory: string) {
-    const entries = await fs.readdir(directory, { withFileTypes: true })
+  log('Searching for files with pattern: %s in %s', pattern, dir)
+  const stream = glob.stream(pattern, options)
 
-    for (const entry of entries) {
-      const fullPath = join(directory, entry.name)
-
-      if (entry.isDirectory()) {
-        await scan(fullPath)
-      } else if (entry.name.endsWith('.js')) {
-        const content = await fs.readFile(fullPath, 'utf8')
-        if (content.includes('import ') || content.includes('export ')) {
-          result.push(fullPath)
-        }
-      }
+  for await (const filePath of stream) {
+    const content = await fs.readFile(filePath, 'utf8')
+    if (content.includes('import ') || content.includes('export ')) {
+      result.push(filePath)
     }
   }
 
-  await scan(dir)
   log(`Found ${result.length} JS files with imports/exports in ${dir}`)
   return result
 }
