@@ -1,4 +1,4 @@
-# TSFIX - Write TypeScript. Get working ESM. It's that simple.
+# TSFIX - TypeScript to ESM Made Simple
 
 [![NPM version](https://img.shields.io/npm/v/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
 [![License](https://img.shields.io/npm/l/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
@@ -6,18 +6,18 @@
 [![Code coverage](https://img.shields.io/codecov/c/github/2BAD/tsfix)](https://codecov.io/gh/2BAD/tsfix)
 [![Written in TypeScript](https://img.shields.io/github/languages/top/2BAD/tsfix)](https://github.com/2BAD/tsfix/search?l=typescript)
 
-TSFIX automatically fixes ECMAScript Modules (ESM) compatibility issues in tsc-generated JavaScript. Unlike CommonJS, ESM requires explicit file extensions in import paths, which TypeScript's compiler does not automatically handle.
+TSFIX fixes ESM compatibility in tsc-compiled JavaScript by adding required file extensions to imports. ESM demands explicit file extensions that the TypeScript compiler doesn't provide automatically.
 
 ## Features
 
-- Automatically detects TypeScript configuration and output paths
-- Handles all types of imports (absolute, relative, dynamic, etc.)
-- Supports both regex and AST-based extraction modes for different performance profiles
-- Adds proper `.js` extensions to imports in compiled JavaScript files
+- Auto-detects TypeScript config and output paths
+- Handles all import types (absolute, relative, dynamic)
+- Offers regex (fast) and AST (accurate) extraction modes
+- Adds `.js` extensions to compiled JS imports specifiers
 - Resolves directory imports to `index.js`
-- Properly handles TypeScript's `.ts` extension in source code when `allowImportingTsExtensions` is enabled
-- Fixes `.d.ts` declaration files unlike TypeScript's new `--rewriteRelativeImportExtensions` flag which ignores them
-- Works with all TypeScript compilers and versions (not just 5.5+)
+- Handles `.ts` extensions when `allowImportingTsExtensions` is enabled
+- Fixes `.d.ts` files (unlike TypeScript's `--rewriteRelativeImportExtensions`)
+- Compatible with all TypeScript versions
 
 ## Install
 
@@ -102,9 +102,9 @@ DEBUG=tsfix:main,tsfix:extractor tsfix
 DEBUG=tsfix:fixer tsfix
 ```
 
-## Why is this needed?
+## Why TSFIX exists
 
-Despite 8 years of developer requests, TypeScript maintainers have not implemented automatic extension handling for ESM output. While TypeScript 5.5+ added a `--rewriteRelativeImportExtensions` flag, it doesn't fix .d.ts files and has other limitations. This tool saves countless hours for the developers dealing with this fundamental issue that should have been handled by `tsc` directly.
+TypeScript still lacks proper ESM output support after 8+ years of requests. The recent `--rewriteRelativeImportExtensions` flag in TS 5.5+ has limitations with .d.ts files. TSFIX resolves these issues, saving development time.
 
 ### Major TypeScript Issues (Still Unresolved)
 
@@ -120,31 +120,29 @@ Despite 8 years of developer requests, TypeScript maintainers have not implement
 
 - [#49083](https://github.com/microsoft/TypeScript/issues/49083): "module": "node16" should support extension rewriting (Partially addressed via [#59767](https://github.com/microsoft/TypeScript/pull/59767))
 
-**The core problem remains**: While TypeScript has acknowledged ESM issues through the introduction of node16/nodenext module resolution, developers are still forced to use external tools to handle extension transformation. This requirement creates unnecessary friction in the development workflow that should have been solved directly by the compiler.
 
 ### ESM Requirements
 
-ECMAScript Modules has stricter requirements than CommonJS, including:
+ESM has stricter requirements than CommonJS:
 
-- Mandatory file extensions in import paths (`.js`, `.mjs`, etc.)
-- No automatic resolution of `index.js` files
-- No automatic directory-to-file resolution
-- Different handling of package.json 'exports' field
+- Required file extensions (`.js`, `.mjs`)
+- No automatic `index.js` resolution
+- No directory-to-file resolution
+- Different package.json 'exports' handling
 
 ## Performance
 
-TSFIX provides two extraction modes:
+TSFIX offers two extraction engines:
 
-- **Regex mode** (default): Faster extraction using regular expressions
-- **AST mode**: More accurate extraction using TypeScript's Abstract Syntax Tree
+- **Regex mode** (default): Fast pattern-based extraction 
+- **AST mode**: Precise syntax tree-based extraction
 
-You can benchmark both modes using the built-in benchmark runner:
+Benchmark both modes with:
 
 ```sh
-# Run a benchmark against a GitHub repository
-tsx source/benchmark-runner.ts --repo https://github.com/example/repo.git
+tsx source/utils/benchmark-runner.ts --repo https://github.com/org/yourrepo.git
 ```
 
 ## Contributing
 
-We welcome contributions! If you find a bug or want to request a new feature, please open an issue. If you want to submit a bug fix or new feature, please open a pull request.
+Contributions welcome! Open issues for bugs/features or submit PRs with improvements.
