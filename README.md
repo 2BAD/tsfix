@@ -134,14 +134,8 @@ ESM has stricter requirements than CommonJS:
 
 TSFIX offers two extraction engines:
 
-- **Regex mode** (default): Fast pattern-based extraction 
+- **Regex mode** (default): Fast pattern-based extraction (x5 faster than AST mode)
 - **AST mode**: Precise syntax tree-based extraction
-
-Benchmark both modes with:
-
-```sh
-tsx source/utils/benchmark-runner.ts --repo https://github.com/org/yourrepo.git
-```
 
 ## Contributing
 

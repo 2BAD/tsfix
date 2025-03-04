@@ -17,15 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [1.0.0] - 2025-03-XX
+## [1.0.0] - 2025-03-04
 
 ### Added
 
 - **AST-based import extraction** using TypeScript's compiler API
   - More accurate parsing of complex TypeScript syntax
   - Better handling of edge cases and unusual formatting
-- **Benchmark runner** for performance testing
-  - Compare AST vs regex extraction modes against any GitHub repository
 - **Integration tests** with real-world codebases
 
 ### Changed
