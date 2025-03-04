@@ -197,8 +197,8 @@ test('Integration test with CLI (AST mode)', async () => {
  * @param dir - Directory to scan recursively for JS files with imports
  * @returns Array of file paths containing import statements
  */
-async function findJsFilesWithImports(dir: string): Promise<(string | Buffer)[]> {
-  const result = []
+async function findJsFilesWithImports(dir: string): Promise<string[]> {
+  const result: string[] = []
   const pattern = '**/*.js'
   const options = {
     cwd: dir,
@@ -213,7 +213,7 @@ async function findJsFilesWithImports(dir: string): Promise<(string | Buffer)[]>
   for await (const filePath of stream) {
     const content = await fs.readFile(filePath, 'utf8')
     if (content.includes('import ') || content.includes('export ')) {
-      result.push(filePath)
+      result.push(filePath.toString())
     }
   }
 
