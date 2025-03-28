@@ -1,9 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { tsFix } from '../build/tsfix.js'
+import { run } from './cli.ts'
+import { tsFix } from './tsfix.ts'
 
-vi.mock('../build/tsfix.js', () => ({
+vi.mock('./tsfix.ts', () => ({
   tsFix: vi.fn()
 }))
+vi.mock('./cli.ts', async (importOriginal) => {
+  const mod = await importOriginal<typeof import('./cli.ts')>()
+  return {
+    ...mod,
+    run: vi.fn().mockImplementation(mod.run)
+  }
+})
 
 describe('cli', () => {
   let originalArgv: string[]
@@ -23,9 +31,7 @@ describe('cli', () => {
 
     process.argv = ['node', 'cli.mjs', './dist', '--extensions=jsx,tsx', '--pattern=*.js', '--mode=regex']
 
-    // @ts-expect-error this module doesn't export anything
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _cliModule = await import('../bin/cli.mjs')
+    await run()
 
     expect(tsFix).toHaveBeenCalledWith({
       cwd: './dist',
@@ -40,9 +46,7 @@ describe('cli', () => {
 
     process.argv = ['node', 'cli.mjs', './dist', '-e', 'jsx,tsx', '-p', '*.js', '-m', 'regex']
 
-    // @ts-expect-error this module doesn't export anything
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _cliModule = await import('../bin/cli.mjs')
+    await run()
 
     expect(tsFix).toHaveBeenCalledWith({
       cwd: './dist',
@@ -57,9 +61,7 @@ describe('cli', () => {
 
     process.argv = ['node', 'cli.mjs', './dist']
 
-    // @ts-expect-error this module doesn't export anything
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const _cliModule = await import('../bin/cli.mjs')
+    await run()
 
     expect(tsFix).toHaveBeenCalledWith({
       cwd: './dist',
