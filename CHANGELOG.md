@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Improved handling of directory imports to properly resolve to index.js files
 - Better error handling when files can't be found or accessed
-- Fixed path alias transforms to correctly generate relative paths with extensions
 
 ### Changed
 

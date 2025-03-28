@@ -1,4 +1,4 @@
-# TSFIX - TypeScript to ESM Made Simple
+# TSFIX
 
 [![NPM version](https://img.shields.io/npm/v/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
 [![License](https://img.shields.io/npm/l/@2bad/tsfix)](https://www.npmjs.com/package/@2bad/tsfix)
@@ -6,30 +6,25 @@
 [![Code coverage](https://img.shields.io/codecov/c/github/2BAD/tsfix)](https://codecov.io/gh/2BAD/tsfix)
 [![Written in TypeScript](https://img.shields.io/github/languages/top/2BAD/tsfix)](https://github.com/2BAD/tsfix/search?l=typescript)
 
-TSFIX fixes ESM compatibility in tsc-compiled JavaScript by adding required file extensions to imports. ESM demands explicit file extensions that the TypeScript compiler doesn't provide automatically.
+A post-compilation tool that fixes TypeScript's critical ESM compatibility failures. Properly adds .js extensions, resolves path aliases, and handles index.js imports where tsc consistently falls short, even in the latest versions.
 
-## Features
+## Complete Solution for All TypeScript Issues
 
-- Auto-detects TypeScript config and output paths
-- Handles all import types (absolute, relative, dynamic)
-- Offers regex (fast) and AST (accurate) extraction modes
-- Adds `.js` extensions to compiled JS imports specifiers
-- Resolves directory imports to `index.js`
-- Handles `.ts` extensions when `allowImportingTsExtensions` is enabled
-- Fixes `.d.ts` files (unlike TypeScript's `--rewriteRelativeImportExtensions`)
-- Compatible with all TypeScript versions
+- ✅ **Fixes Extension Problems**: Adds required `.js` extensions to imports
+- ✅ **Handles Directory Imports**: Properly resolves to `index.js` files
+- ✅ **Transforms Path Aliases**: Converts tsconfig aliases to valid relative paths
+- ✅ **Fixes Declaration Files**: Properly handles `.d.ts` files (unlike TypeScript itself)
+- ✅ **Zero Configuration**: Works out-of-the-box with any TypeScript setup
+- ✅ **Universal Compatibility**: Works with all TypeScript versions and config setups
+- ✅ **High Performance**: Offers both fast regex mode and accurate AST mode
 
-## Install
+## Zero Hassle Setup
 
 ```shell
 npm install --save-dev @2bad/tsfix
 ```
 
-## Usage
-
-### As a post-build script
-
-Add `tsfix` as a post-build script in your project's package.json:
+Then add `postbuild` script to your package.json:
 
 ```json
 {
@@ -40,15 +35,60 @@ Add `tsfix` as a post-build script in your project's package.json:
 }
 ```
 
-This automatically runs `tsfix` after TypeScript compilation.
+That's it. TSFIX finds your TypeScript output and fixes all import issues automatically.
 
-### Manual execution
+## Real World Examples
 
-```sh
-npx @2bad/tsfix
+### Converting Regular Imports
+
+```typescript
+// Before TypeScript Compilation
+import { helper } from './utils/helper.ts'
+
+// After TypeScript Compilation (BROKEN)
+import { helper } from './utils/helper.ts'
+
+// After TSFIX (FIXED)
+import { helper } from './utils/helper.js' // Works in ESM!
 ```
 
-### Advanced options
+### Fixing Path Alias Imports
+
+```typescript
+// tsconfig.json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+
+// Before TypeScript Compilation
+import { Button } from '@/components/Button'
+
+// After TypeScript Compilation (BROKEN)
+import { Button } from '@/components/Button'
+
+// After TSFIX (FIXED)
+import { Button } from './src/components/Button.js' // Correctly resolved!
+```
+
+### Resolving Directory Imports
+
+```typescript
+// Before TypeScript Compilation
+import { config } from './config'
+
+// After TypeScript Compilation (BROKEN)
+import { config } from './config'
+
+// After TSFIX (FIXED)
+import { config } from './config/index.js' // Properly resolved!
+```
+
+## Advanced Usage
 
 ```sh
 # Use AST-based extraction (more accurate but slower)
@@ -58,38 +98,9 @@ npx @2bad/tsfix --mode ast
 npx @2bad/tsfix --pattern "**/*.js"
 ```
 
-## Example
+## Debugging
 
-Consider the following TypeScript files:
-
-```typescript
-// src/main.ts
-import { helper } from './utils/helper.ts'
-
-// src/utils/helper.ts
-export const helper = () => 'helper function'
-```
-
-After running tsc, the compiled JavaScript files might look like this:
-
-```javascript
-// dist/main.js
-import { helper } from './utils/helper.ts'
-
-// dist/utils/helper.js
-export const helper = () => 'helper function'
-```
-
-Running tsfix will transform the import paths to:
-
-```javascript
-// dist/main.js
-import { helper } from './utils/helper.js'
-```
-
-## Troubleshooting
-
-Use the `DEBUG` environment variable to enable detailed logging:
+Enable detailed logging:
 
 ```sh
 # Enable all debug logging
@@ -104,10 +115,7 @@ DEBUG=tsfix:fixer tsfix
 
 ## Why TSFIX exists
 
-TypeScript still lacks proper ESM output support after 8+ years of requests. The recent `--rewriteRelativeImportExtensions` flag in TS 5.5+ has limitations with .d.ts files. TSFIX resolves these issues, saving development time.
-
 ### Major TypeScript Issues (Still Unresolved)
-
 - [#16577](https://github.com/microsoft/TypeScript/issues/16577): Provide a way to add the '.js' file extension to the end of module specifiers (2017)
 - [#28288](https://github.com/microsoft/TypeScript/issues/28288): Feature: disable extensionless imports (2018)
 - [#40878](https://github.com/microsoft/TypeScript/issues/40878): Compiled JavaScript import is missing file extension (2020)
@@ -121,21 +129,12 @@ TypeScript still lacks proper ESM output support after 8+ years of requests. The
 - [#49083](https://github.com/microsoft/TypeScript/issues/49083): "module": "node16" should support extension rewriting (Partially addressed via [#59767](https://github.com/microsoft/TypeScript/pull/59767))
 
 
-### ESM Requirements
-
-ESM has stricter requirements than CommonJS:
-
-- Required file extensions (`.js`, `.mjs`)
-- No automatic `index.js` resolution
-- No directory-to-file resolution
-- Different package.json 'exports' handling
-
-## Performance
+## Performance Options
 
 TSFIX offers two extraction engines:
 
-- **Regex mode** (default): Fast pattern-based extraction (x5 faster than AST mode)
-- **AST mode**: Precise syntax tree-based extraction
+- **Regex mode** (default): Fast pattern-based extraction (5x faster than AST mode)
+- **AST mode**: Precise syntax tree-based extraction for complex codebases
 
 ## Contributing
 

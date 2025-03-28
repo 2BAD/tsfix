@@ -31,7 +31,7 @@ describe('tsconfig', () => {
 
   describe('loadTSConfig', () => {
     it('loads and parses tsconfig file', () => {
-      const mockParsedConfig = { options: { outDir: 'dist' } }
+      const mockParsedConfig = { fileNames: [], errors: [], options: { outDir: 'dist' } }
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue(mockParsedConfig)
 
       const result = loadTSConfig()
@@ -53,6 +53,8 @@ describe('tsconfig', () => {
   describe('findOutDir', () => {
     it('returns outDir from tsconfig', () => {
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        fileNames: [],
+        errors: [],
         options: { outDir: 'dist' }
       })
 
@@ -63,6 +65,8 @@ describe('tsconfig', () => {
 
     it('throws error if no outDir in tsconfig', () => {
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        fileNames: [],
+        errors: [],
         options: {}
       })
 
@@ -73,6 +77,8 @@ describe('tsconfig', () => {
   describe('getPathAliases', () => {
     it('returns null if no paths in tsconfig', () => {
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        fileNames: [],
+        errors: [],
         options: { outDir: 'dist' }
       })
 
@@ -83,6 +89,8 @@ describe('tsconfig', () => {
 
     it('returns resolved path aliases with default baseUrl', () => {
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        fileNames: [],
+        errors: [],
         options: {
           paths: {
             '@/*': ['src/*'],
@@ -103,6 +111,8 @@ describe('tsconfig', () => {
 
     it('uses baseUrl from tsconfig when provided', () => {
       vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        fileNames: [],
+        errors: [],
         options: {
           baseUrl: './app',
           paths: {
