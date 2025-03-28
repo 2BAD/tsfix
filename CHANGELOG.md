@@ -15,7 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactored CLI tests to use before/after hooks for improved readability and maintenance
+- Replaced meow package with custom argument parsing for better control and reduced dependencies
+- Enhanced CLI with improved error handling and cleaner help output
+
 ### Removed
+
+- Dependency on meow package
 
 ## [1.0.0] - 2025-03-04
 
