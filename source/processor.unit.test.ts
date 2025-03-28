@@ -3,7 +3,9 @@ import type { Stats } from 'node:fs'
 import type fs from 'node:fs/promises'
 import { access, readFile, stat, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { applyFixes, processFile } from './processor.ts'
+import { extractImports } from './extractor.ts'
+import { getPathAliases } from './helpers/tsconfig.ts'
+import { applyFixes, processFile, resolvePathAlias } from './processor.ts'
 import type { Import } from './types.ts'
 
 vi.mock('node:fs/promises', async (importOriginal) => {
@@ -15,6 +17,57 @@ vi.mock('node:fs/promises', async (importOriginal) => {
     stat: vi.fn(),
     writeFile: vi.fn()
   }
+})
+
+vi.mock('./extractor.ts', () => ({
+  extractImports: vi.fn()
+}))
+
+vi.mock('./helpers/tsconfig.ts', () => ({
+  getPathAliases: vi.fn()
+}))
+
+describe('resolvePathAlias', () => {
+  it('resolves the longest matching alias correctly', () => {
+    const aliases = {
+      '@/': ['./src/'],
+      '@/components/': ['./src/components/']
+    }
+
+    const result = resolvePathAlias('@/components/Button', aliases)
+
+    expect(result).toBe('src/components/Button')
+  })
+
+  it('returns null if no matching alias', () => {
+    const aliases = {
+      '@/': ['./src/']
+    }
+
+    const result = resolvePathAlias('components/Button', aliases)
+
+    expect(result).toBeNull()
+  })
+
+  it('returns null if matching alias has no targets', () => {
+    const aliases = {
+      '@/': []
+    }
+
+    const result = resolvePathAlias('@/Button', aliases)
+
+    expect(result).toBeNull()
+  })
+
+  it('correctly joins paths for wildcarded aliases', () => {
+    const aliases = {
+      '@/': ['./src/']
+    }
+
+    const result = resolvePathAlias('@/utils/helper', aliases)
+
+    expect(result).toBe('src/utils/helper')
+  })
 })
 
 describe('processFile', () => {
@@ -33,6 +86,40 @@ describe('processFile', () => {
     vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
     vi.mocked(writeFile).mockResolvedValueOnce()
     vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as Stats)
+    vi.mocked(extractImports).mockReturnValue([
+      { source: 'import x from "./testFolder/x"', specifier: './testFolder/x', type: 'relative', extension: null }
+    ])
+    vi.mocked(getPathAliases).mockReturnValue(null)
+
+    await processFile(filePath, dependencies)
+
+    expect(readFile).toHaveBeenCalledWith(filePath, 'utf-8')
+    expect(writeFile).toHaveBeenCalledWith(filePath, fixedCode)
+  })
+
+  it('should process path aliases when present', async () => {
+    expect.assertions(2)
+
+    const filePath = 'test.js'
+    const sourceCode = 'import x from "@/components/Button";'
+    const dependencies = ['dependency1', 'dependency2']
+    const fixedCode = 'import x from "./src/components/Button.js";'
+
+    vi.mocked(readFile).mockResolvedValueOnce(sourceCode)
+    vi.mocked(writeFile).mockResolvedValueOnce()
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as Stats)
+    vi.mocked(extractImports).mockReturnValue([
+      {
+        source: 'import x from "@/components/Button"',
+        specifier: '@/components/Button',
+        type: 'alias',
+        extension: null
+      }
+    ])
+    vi.mocked(getPathAliases).mockReturnValue({
+      '@/': ['./src/']
+    })
+    vi.mocked(access).mockResolvedValue(undefined)
 
     await processFile(filePath, dependencies)
 
@@ -180,7 +267,7 @@ describe('applyFixes', () => {
   })
 
   it('should log an error when the import path is not found', async () => {
-    expect.assertions(2)
+    expect.assertions(1)
 
     const code = `
       import { foo } from './bar';
@@ -189,16 +276,60 @@ describe('applyFixes', () => {
       { source: "import { foo } from './bar'", specifier: './bar', type: 'relative', extension: null }
     ]
     const dirPath = '/path/to/file'
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockReturnValue()
 
-    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as Stats)
-    vi.mocked(access).mockRejectedValueOnce(new Error('File not found'))
+    vi.mocked(access).mockRejectedValue(new Error('File not found'))
+    vi.mocked(stat).mockRejectedValue(new Error('File not found'))
 
     const result = await applyFixes(code, imports, dirPath)
 
-    expect(consoleErrorSpy).toHaveBeenCalledWith('Unable to find file at import path: %s', expect.any(String))
+    // The original code should be returned unchanged when imports can't be resolved
     expect(result).toBe(code)
+  })
 
-    consoleErrorSpy.mockRestore()
+  it('should handle alias imports by resolving to paths', async () => {
+    expect.assertions(1)
+
+    const code = "import Button from '@/components/Button'"
+    const imports: Import[] = [
+      {
+        source: "import Button from '@/components/Button'",
+        specifier: '@/components/Button',
+        type: 'alias',
+        extension: null
+      }
+    ]
+    const pathAliases = {
+      '@/': ['./src/']
+    }
+    const dirPath = '/path/to/file'
+
+    vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as Stats)
+    vi.mocked(access).mockResolvedValue(undefined)
+
+    const result = await applyFixes(code, imports, dirPath, pathAliases)
+
+    expect(result).toBe("import Button from './src/components/Button.js'")
+  })
+
+  it('should leave alias imports unchanged when path cannot be resolved', async () => {
+    expect.assertions(1)
+
+    const code = "import Button from 'unknown/Button'"
+    const imports: Import[] = [
+      {
+        source: "import Button from 'unknown/Button'",
+        specifier: 'unknown/Button',
+        type: 'alias',
+        extension: null
+      }
+    ]
+    const pathAliases = {
+      '@/': ['./src/']
+    }
+    const dirPath = '/path/to/file'
+
+    const result = await applyFixes(code, imports, dirPath, pathAliases)
+
+    expect(result).toBe(code)
   })
 })

@@ -1,7 +1,7 @@
 // biome-ignore lint/style/noNamespaceImport: needed for mocking
 import * as typescript from 'typescript'
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { findOutDir } from './tsconfig.ts'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { findOutDir, getPathAliases, loadTSConfig } from './tsconfig.ts'
 
 vi.mock('typescript', async () => {
   const actual = await vi.importActual('typescript')
@@ -9,69 +9,113 @@ vi.mock('typescript', async () => {
     ...actual,
     findConfigFile: vi.fn(),
     readConfigFile: vi.fn(),
-    parseJsonConfigFileContent: vi.fn()
+    parseJsonConfigFileContent: vi.fn(),
+    sys: {
+      fileExists: vi.fn(),
+      readFile: vi.fn()
+    }
   }
 })
 
-describe('findBuildDir', () => {
-  const ts = typescript as unknown as {
-    findConfigFile: ReturnType<typeof vi.fn>
-    readConfigFile: ReturnType<typeof vi.fn>
-    parseJsonConfigFileContent: ReturnType<typeof vi.fn>
-    sys: { fileExists: () => boolean; readFile: () => string }
-  }
+describe('tsconfig', () => {
+  // eslint-disable-next-line vitest/no-hooks
+  beforeEach(() => {
+    vi.resetAllMocks()
+    vi.mocked(typescript.findConfigFile).mockReturnValue('/test/tsconfig.json')
+    vi.mocked(typescript.readConfigFile).mockReturnValue({ config: {} })
+  })
 
   afterEach(() => {
     vi.resetAllMocks()
   })
 
-  it('should throw an error if tsconfig file is not found', () => {
-    expect.assertions(2)
+  describe('loadTSConfig', () => {
+    it('loads and parses tsconfig file', () => {
+      const mockParsedConfig = { options: { outDir: 'dist' } }
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue(mockParsedConfig)
 
-    ts.findConfigFile.mockReturnValueOnce(undefined)
+      const result = loadTSConfig()
 
-    expect(() => findOutDir()).toThrow('Unable to locate tsconfig')
-    expect(ts.findConfigFile).toHaveBeenCalledTimes(1)
-  })
-
-  it('should throw an error if outDir is not specified in tsconfig', () => {
-    expect.assertions(3)
-
-    ts.findConfigFile.mockReturnValueOnce('/path/to/tsconfig.json')
-    ts.readConfigFile.mockReturnValueOnce({
-      config: {
-        compilerOptions: {}
-      }
-    })
-    ts.parseJsonConfigFileContent.mockReturnValueOnce({
-      options: {}
+      expect(result).toEqual({
+        tsconfigPath: '/test/tsconfig.json',
+        parsedConfig: mockParsedConfig
+      })
+      expect(typescript.findConfigFile).toHaveBeenCalledWith(process.cwd(), typescript.sys.fileExists)
     })
 
-    expect(() => findOutDir()).toThrow('No outDir specified in tsconfig')
-    expect(ts.findConfigFile).toHaveBeenCalledTimes(1)
-    expect(ts.readConfigFile).toHaveBeenCalledTimes(1)
+    it('throws error if tsconfig is not found', () => {
+      vi.mocked(typescript.findConfigFile).mockReturnValue(undefined)
+
+      expect(() => loadTSConfig()).toThrow('Unable to locate tsconfig')
+    })
   })
 
-  it('should return the outDir specified in tsconfig', () => {
-    expect.assertions(1)
+  describe('findOutDir', () => {
+    it('returns outDir from tsconfig', () => {
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        options: { outDir: 'dist' }
+      })
 
-    const outDir = '/path/to/build'
+      const outDir = findOutDir()
 
-    ts.findConfigFile.mockReturnValueOnce('/path/to/tsconfig.json')
-    ts.readConfigFile.mockReturnValueOnce({
-      config: {
-        compilerOptions: {
-          outDir
+      expect(outDir).toBe('dist')
+    })
+
+    it('throws error if no outDir in tsconfig', () => {
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        options: {}
+      })
+
+      expect(() => findOutDir()).toThrow('No outDir specified in tsconfig')
+    })
+  })
+
+  describe('getPathAliases', () => {
+    it('returns null if no paths in tsconfig', () => {
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        options: { outDir: 'dist' }
+      })
+
+      const result = getPathAliases()
+
+      expect(result).toBeNull()
+    })
+
+    it('returns resolved path aliases with default baseUrl', () => {
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        options: {
+          paths: {
+            '@/*': ['src/*'],
+            'components/*': ['src/components/*'],
+            lib: ['src/lib/index.ts']
+          }
         }
-      }
-    })
-    ts.parseJsonConfigFileContent.mockReturnValueOnce({
-      options: {
-        outDir
-      }
+      })
+
+      const result = getPathAliases()
+
+      expect(result).toEqual({
+        '@/': ['src/'],
+        'components/': ['src/components/'],
+        lib: ['src/lib/index.ts']
+      })
     })
 
-    const buildDir = findOutDir()
-    expect(buildDir).toStrictEqual(outDir)
+    it('uses baseUrl from tsconfig when provided', () => {
+      vi.mocked(typescript.parseJsonConfigFileContent).mockReturnValue({
+        options: {
+          baseUrl: './app',
+          paths: {
+            '@/*': ['src/*']
+          }
+        }
+      })
+
+      const result = getPathAliases()
+
+      expect(result).toEqual({
+        '@/': ['app/src/']
+      })
+    })
   })
 })

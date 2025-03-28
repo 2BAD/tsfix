@@ -21,3 +21,5 @@ export type Import = {
   type: (typeof IMPORT_TYPE)[keyof typeof IMPORT_TYPE]
   extension: string | null
 }
+
+export type PathAliasMap = Record<string, string[]>

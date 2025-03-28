@@ -11,13 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Path alias resolution** for TypeScript path mappings defined in tsconfig.json
+  - Automatically transforms imports using path aliases to proper relative paths with extensions
+  - Works with any path mapping configuration in your tsconfig.json
+  - Supports nested aliases with correct resolution of the longest matching pattern
+
 ### Fixed
+
+- Improved handling of directory imports to properly resolve to index.js files
+- Better error handling when files can't be found or accessed
+- Fixed path alias transforms to correctly generate relative paths with extensions
 
 ### Changed
 
-- Rewrote CLI in TypeScript with proper type definitions
-- Removed meow dependency in favor of custom argument parsing
-- Improved CLI tests with before/after hooks
+- More accurate detection of quote types (single vs double) when transforming imports
+- Enhanced error messages for better debugging of transformation issues
 
 ### Removed
 
