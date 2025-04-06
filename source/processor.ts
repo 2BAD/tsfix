@@ -5,7 +5,7 @@ import { extractImports } from './extractor.ts'
 import { getPathAliases } from './helpers/tsconfig.ts'
 import type { Import, Mode, PathAliasMap } from './types.ts'
 
-const log = debug('tsfix:fixer')
+const log = debug('tsfix:processor')
 
 /**
  * Processes a file by extracting its imports, applying fixes, and writing the fixed code back to the file.
