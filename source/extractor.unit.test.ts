@@ -158,6 +158,22 @@ describe('extractImports', () => {
       {
         input: "import * as js from './js.js'",
         expected: './js.js'
+      },
+      {
+        input: 'import type { Props } from "./components/types";',
+        expected: './components/types'
+      },
+      {
+        input: 'import type { User, Role } from "/models/user";',
+        expected: '/models/user'
+      },
+      {
+        input: 'export type { Config } from "./config";',
+        expected: './config'
+      },
+      {
+        input: 'export type { APIResponse } from "@/api/types";',
+        expected: '@/api/types'
       }
     ]
 

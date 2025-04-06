@@ -155,6 +155,38 @@ describe('applyFixes', () => {
     `)
   })
 
+  it('should fix type imports by replacing .ts to .js in relative import specifiers', async () => {
+    expect.assertions(1)
+
+    const code = `
+      import type { Props } from './types.ts';
+      export type { Config } from '../config.ts';
+    `
+    const imports: Import[] = [
+      {
+        source: "import type { Props } from './types.ts'",
+        specifier: './types.ts',
+        type: 'relative',
+        extension: '.ts'
+      },
+      {
+        source: "export type { Config } from '../config.ts'",
+        specifier: '../config.ts',
+        type: 'relative',
+        extension: '.ts'
+      }
+    ]
+    const dirPath = '/path/to/file'
+    vi.mocked(access).mockResolvedValue()
+
+    const result = await applyFixes(code, imports, dirPath)
+
+    expect(result).toBe(`
+      import type { Props } from './types.js';
+      export type { Config } from '../config.js';
+    `)
+  })
+
   it('should fix imports by appending .js to relative import specifiers with missing extension', async () => {
     expect.assertions(1)
 
