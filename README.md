@@ -100,8 +100,6 @@ npx @2bad/tsfix --pattern "**/*.js"
 
 ## Debugging
 
-Enable detailed logging:
-
 ```sh
 # Enable all debug logging
 DEBUG=* tsfix
