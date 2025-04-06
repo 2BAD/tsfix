@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+### Changed
+
+### Removed
+
+## [1.1.0] - 2025-04-06
+
+### Added
+
 - **Path alias resolution** for TypeScript path mappings defined in tsconfig.json
   - Automatically transforms imports using path aliases to proper relative paths with extensions
   - Works with any path mapping configuration in your tsconfig.json
@@ -25,8 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - More accurate detection of quote types (single vs double) when transforming imports
 - Enhanced error messages for better debugging of transformation issues
-
-### Removed
 
 ## [1.0.0] - 2025-03-04
 
