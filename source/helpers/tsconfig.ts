@@ -54,6 +54,7 @@ export const getPathAliases = (): PathAliasMap | null => {
   const { parsedConfig } = loadTSConfig()
   const paths = parsedConfig.options.paths
   const baseUrl = parsedConfig.options.baseUrl || '.'
+  const outDir = parsedConfig.options.outDir || '.'
 
   if (!paths) {
     log('No path aliases found in tsconfig.json')
@@ -66,11 +67,11 @@ export const getPathAliases = (): PathAliasMap | null => {
     // Remove wildcards for processing (e.g., '@/*' -> '@/')
     const cleanAlias = alias.replace(/\*$/, '')
 
-    // Resolve target paths relative to baseUrl
+    // Resolve target paths relative to outDir
     const resolvedTargets = targets.map((target) => {
       // Remove wildcards from targets
       const cleanTarget = target.replace(/\*$/, '')
-      return join(baseUrl, cleanTarget)
+      return join(outDir, baseUrl, cleanTarget)
     })
 
     resolvedPaths[cleanAlias] = resolvedTargets

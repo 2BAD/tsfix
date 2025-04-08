@@ -115,8 +115,10 @@ describe('tsconfig', () => {
         errors: [],
         options: {
           baseUrl: './app',
+          outdir: 'dist',
           paths: {
-            '@/*': ['src/*']
+            '@/*': ['./*'],
+            'vendor/*': ['./components/vendor/*']
           }
         }
       })
@@ -124,7 +126,8 @@ describe('tsconfig', () => {
       const result = getPathAliases()
 
       expect(result).toEqual({
-        '@/': ['app/src/']
+        '@/': ['app/'],
+        'vendor/': ['app/components/vendor/']
       })
     })
   })
