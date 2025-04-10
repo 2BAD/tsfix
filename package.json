@@ -68,7 +68,7 @@
     "typescript": "5.8.3"
   },
   "devDependencies": {
-    "@2bad/axiom": "1.0.0-beta.14",
+    "@2bad/axiom": "1.0.0-beta.15",
     "@2bad/tsconfig": "3.0.1",
     "@2bad/tsfix": "1.1.0",
     "@biomejs/biome": "1.9.4",
@@ -84,7 +84,7 @@
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.1.1"
   },
-  "packageManager": "npm@11.2.0",
+  "packageManager": "npm@11.3.0",
   "engines": {
     "node": ">=20"
   },
