@@ -2,6 +2,8 @@
 import type { Stats } from 'node:fs'
 import type fs from 'node:fs/promises'
 import { access, readFile, stat, writeFile } from 'node:fs/promises'
+import type pathe from 'pathe'
+import { relative } from 'pathe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { extractImports } from './extractor.ts'
 import { getPathAliases } from './helpers/tsconfig.ts'
@@ -26,6 +28,14 @@ vi.mock('./extractor.ts', () => ({
 vi.mock('./helpers/tsconfig.ts', () => ({
   getPathAliases: vi.fn()
 }))
+
+vi.mock('pathe', async (importOriginal) => {
+  const original = await importOriginal<typeof pathe>()
+  return {
+    ...original,
+    relative: vi.fn()
+  }
+})
 
 describe('resolvePathAlias', () => {
   it('resolves the longest matching alias correctly', () => {
@@ -120,6 +130,7 @@ describe('processFile', () => {
       '@/': ['./src/']
     })
     vi.mocked(access).mockResolvedValue(undefined)
+    vi.mocked(relative).mockReturnValue('./src/components/Button.js')
 
     await processFile(filePath, dependencies)
 
@@ -337,6 +348,7 @@ describe('applyFixes', () => {
 
     vi.mocked(stat).mockResolvedValue({ isDirectory: () => false } as Stats)
     vi.mocked(access).mockResolvedValue(undefined)
+    vi.mocked(relative).mockReturnValue('./src/components/Button.js')
 
     const result = await applyFixes(code, imports, dirPath, pathAliases)
 

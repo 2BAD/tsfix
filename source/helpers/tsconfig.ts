@@ -53,7 +53,6 @@ export const findOutDir = (): string => {
 export const getPathAliases = (): PathAliasMap | null => {
   const { parsedConfig } = loadTSConfig()
   const paths = parsedConfig.options.paths
-  const baseUrl = parsedConfig.options.baseUrl || '.'
   const outDir = parsedConfig.options.outDir || '.'
 
   if (!paths) {
@@ -71,7 +70,7 @@ export const getPathAliases = (): PathAliasMap | null => {
     const resolvedTargets = targets.map((target) => {
       // Remove wildcards from targets
       const cleanTarget = target.replace(/\*$/, '')
-      return join(outDir, baseUrl, cleanTarget)
+      return join(outDir, cleanTarget)
     })
 
     resolvedPaths[cleanAlias] = resolvedTargets

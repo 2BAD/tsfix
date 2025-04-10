@@ -1,6 +1,6 @@
 import debug from 'debug'
 import { access, constants, readFile, stat, writeFile } from 'node:fs/promises'
-import { dirname, join, normalize, resolve } from 'pathe'
+import { dirname, join, normalize, relative, resolve } from 'pathe'
 import { extractImports } from './extractor.ts'
 import { getPathAliases } from './helpers/tsconfig.ts'
 import type { Import, Mode, PathAliasMap } from './types.ts'
@@ -94,8 +94,8 @@ const determinePathType = async (basePath: string, importPath: string): Promise<
 
     return shouldAddJsExtension(importPath) ? `${importPath}.js` : importPath
   } catch {
-    // If we can't access the file or get stats, assume it's a file and add .js extension
-    return shouldAddJsExtension(importPath) ? `${importPath}.js` : importPath
+    console.warn('Not modified! Unable to determine path of imported module: ', importPath)
+    return importPath
   }
 }
 
@@ -136,8 +136,10 @@ export const applyFixes = async (
         const resolvedAliasPath = resolvePathAlias(i.specifier, pathAliases)
 
         if (resolvedAliasPath) {
-          const relativePath = `./${resolvedAliasPath}`
-          const finalPath = await determinePathType(dirPath, relativePath)
+          const relativePath = relative(dirPath, resolvedAliasPath)
+          const userFriendlyPath =
+            relativePath.startsWith('.') && relativePath.charAt(0) !== '/' ? relativePath : `./${relativePath}`
+          const finalPath = await determinePathType(dirPath, userFriendlyPath)
 
           result = replaceImportInCode(result, i.specifier, finalPath, quote)
           log('Fixed alias import: %s to %s', i.specifier, finalPath)

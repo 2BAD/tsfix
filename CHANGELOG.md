@@ -17,6 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.1.1] - 2025-04-10
+
+### Breaking Changes
+
+### Added
+
+### Fixed
+
+- Corrected issue where path aliases were incorrectly resolved with absolute paths instead of relative
+
+### Changed
+
+### Removed
+
 ## [1.1.0] - 2025-04-06
 
 ### Added
