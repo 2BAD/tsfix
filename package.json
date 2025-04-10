@@ -73,7 +73,7 @@
     "@2bad/tsfix": "1.1.0",
     "@biomejs/biome": "1.9.4",
     "@swc/cli": "0.6.0",
-    "@swc/core": "1.11.16",
+    "@swc/core": "1.11.18",
     "@types/debug": "4.1.12",
     "@types/node": "22.14.0",
     "@vitest/coverage-v8": "3.1.1",
