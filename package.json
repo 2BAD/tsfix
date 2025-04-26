@@ -45,7 +45,7 @@
   "scripts": {
     "prebuild": "rimraf build",
     "build": "run-p build:*",
-    "postbuild": "run-s fix:ts",
+    "postbuild": "tsfix",
     "build:swc": "swc ./source -d ./build --strip-leading-paths",
     "build:types": "tsc --project tsconfig.build.json",
     "check": "run-p check:*",
@@ -53,7 +53,6 @@
     "check:biome": "biome check ./source",
     "fix": "run-s fix:code fix:format",
     "fix:code": "run-s 'check:eslint -- --fix'",
-    "fix:ts": "tsfix",
     "fix:format": "biome format --write ./source",
     "prepublishOnly": "run-s build",
     "preversion": "run-s check test build",
