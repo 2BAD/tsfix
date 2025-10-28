@@ -2,11 +2,11 @@
 import glob from 'fast-glob'
 import { Readable } from 'node:stream'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-// biome-ignore lint/style/noNamespaceImport: needed for mocking
+// biome-ignore lint/performance/noNamespaceImport: needed for mocking
 import * as options from './helpers/options.ts'
-// biome-ignore lint/style/noNamespaceImport: needed for mocking
+// biome-ignore lint/performance/noNamespaceImport: needed for mocking
 import * as pkg from './helpers/package.ts'
-// biome-ignore lint/style/noNamespaceImport: needed for mocking
+// biome-ignore lint/performance/noNamespaceImport: needed for mocking
 import * as processor from './processor.ts'
 import { tsFix } from './tsfix.ts'
 

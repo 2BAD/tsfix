@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { setupOptions, type Args } from './options.ts'
-// biome-ignore lint/style/noNamespaceImport: needed for mocking
+// biome-ignore lint/performance/noNamespaceImport: needed for mocking
 import * as tsconfig from './tsconfig.ts'
 
 describe('getOptions', () => {

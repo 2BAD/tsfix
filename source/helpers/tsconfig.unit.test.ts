@@ -1,4 +1,4 @@
-// biome-ignore lint/style/noNamespaceImport: needed for mocking
+// biome-ignore lint/performance/noNamespaceImport: needed for mocking
 import * as typescript from 'typescript'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { findOutDir, getPathAliases, loadTSConfig } from './tsconfig.ts'
