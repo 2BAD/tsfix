@@ -1,9 +1,14 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { setupOptions, type Args } from './options.ts'
 // biome-ignore lint/style/noNamespaceImport: needed for mocking
 import * as tsconfig from './tsconfig.ts'
 
 describe('getOptions', () => {
+  // eslint-disable-next-line vitest/no-hooks
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('should return default pattern and cwd when args is empty', () => {
     expect.assertions(2)
     const findOutDirSpy = vi.spyOn(tsconfig, 'findOutDir').mockReturnValueOnce('/default/output/dir')
